@@ -1,0 +1,14 @@
+{
+    "name": "Haell",
+    "Winter": { "temp_dice": "-3d10", "temp_base": 32, "water_chance_dice": "1d20", "water_roll_thresholds": {"1":"Clear", "3": "Overcast", "5": "Mist", "8": "Heavy Fog", "10": "Light", "18": "Heavy"}, "wind_chance_dice": "1d20", "wind_roll_thresholds": {"1": "None", "4": "Gentle Breeze", "10": "Light Wind", "16": "Heavy Wind"}
+    },
+
+    "Spring": { "temp_dice": "2d6", "temp_base": 60, "water_chance_dice": "1d20", "water_roll_thresholds": {"1":"Clear", "3": "Overcast", "5": "Mist", "8": "Heavy Fog", "10": "Light", "15": "Heavy"}, "wind_chance_dice": "1d20", "wind_roll_thresholds": {"1": "None", "2": "Gentle Breeze", "8": "Light Wind", "14": "Heavy Wind"}
+    },
+
+    "Summer": { "temp_dice": "3d8", "temp_base": 70, "water_chance_dice": "1d20", "water_roll_thresholds": {"1":"Clear", "3": "Overcast", "5": "Mist", "8": "Heavy Fog", "13": "Light", "18": "Heavy"}, "wind_chance_dice": "1d20", "wind_roll_thresholds": {"1": "None", "4": "Gentle Breeze", "8": "Light Wind", "18": "Heavy Wind"}
+    },
+
+    "Fall": { "temp_dice": "4d6", "temp_base": 25, "water_chance_dice": "1d20", "water_roll_thresholds": {"1":"Clear", "3": "Overcast", "5": "Mist", "8": "Heavy Fog", "13": "Light", "17": "Heavy"}, "wind_chance_dice": "1d20", "wind_roll_thresholds": {"1": "None", "3": "Gentle Breeze", "9": "Light Wind", "15": "Heavy Wind"}
+    }
+}

@@ -1,0 +1,595 @@
+embed
+<drac2>
+
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def setup_svar_dict(svar_dict: dict) -> dict:
+
+    def setup_wind_water_temp(condition_dict: dict) -> dict:
+        
+        for setting in ["min_rate", "max_rate", "condition"]:
+            if setting in condition_dict.keys():
+                pass
+
+            else:
+                condition_dict[setting] = 0
+
+        return condition_dict
+
+    def setup_settings(svar_dict: dict) -> dict:
+
+        if "Settings" in svar_dict.keys():
+            pass
+
+        else:
+            svar_dict["Settings"] = {}
+
+        # If water exists as a setting
+        if "water" in svar_dict["Settings"].keys():
+                
+            for condition, condition_dict in svar_dict["Settings"]["water"].items():
+                svar_dict["Settings"]["water"][condition] = setup_wind_water_temp(condition_dict)
+
+        # If water does not exist as a setting
+        else:
+            svar_dict["Settings"]["water"] = {}
+
+        # If water exists as a setting
+        if "wind" in svar_dict["Settings"].keys():
+                
+            for condition, condition_dict in svar_dict["Settings"]["wind"].items():
+                svar_dict["Settings"]["wind"][condition] = setup_wind_water_temp(condition_dict)
+
+        # If water does not exist as a setting
+        else:
+            svar_dict["Settings"]["wind"] = {}
+
+        # If water exists as a setting
+        if "temp" in svar_dict["Settings"].keys():
+                
+            for condition, condition_dict in svar_dict["Settings"]["temp"].items():
+                svar_dict["Settings"]["temp"][condition] = setup_wind_water_temp(condition_dict)
+
+        # If water does not exist as a setting
+        else:
+            svar_dict["Settings"]["temp"] = {}
+
+        # If unit does exist as a setting
+        if "unit" in svar_dict["Settings"].keys():
+            pass
+
+        # If unit does not exist as a setting
+        else:
+            svar_dict["Settings"]["unit"] = "imperial"
+
+        if "url" in  svar_dict["Settings"].keys():
+            pass
+
+        else:
+            svar_dict["Settings"]["url"] = {}
+
+        if "color" in svar_dict["Settings"].keys():
+            pass
+
+        else:
+            svar_dict["Settings"]["color"] = {}
+
+        # If ignore depreciation warnings is in the 
+        if "ignore_depr" in svar_dict["Settings"].keys():
+            pass
+
+        else:
+            svar_dict["Settings"]["ignore_depr"] = False
+
+        return svar_dict
+
+    return setup_settings(svar_dict)
+
+
+def convert_units(current_unit: str, value: float) -> float:
+    
+    match current_unit:
+
+        case "f":
+            return round((value - 32) * (5/9), 2)
+
+        case "mph":
+            return round(value * 1.609344, 2)
+
+        case "in/hr":
+            return round(value * 25.4, 2)
+
+        case "c":
+            return round(value * (9/5) + 32, 2)
+
+        case "km/h":
+            return round(value / 1.609344, 2)
+
+        case _:
+            return round(value / 25.4, 2)
+
+
+def roll_dice(dice_type:str, baseline: int = 0) -> list:
+    """
+    Rolls dice and puts together string to use.
+
+    Args:
+        dice_type (str): What dice to roll
+        baseline (int): What to add to the dice roll
+
+    Return:
+        (list): List of results
+
+    """
+    
+    # Rolls dice
+    roll_obj = vroll(dice_type)
+
+    # If baseline is 0
+    if baseline == 0:
+        roll_string = f"{roll_obj.dice} = `{roll_obj.total}`"
+    
+    # If baseline is not 0
+    else:
+        roll_string = f"{roll_obj.dice} + {baseline} = `{baseline + roll_obj.total}`"
+
+    return roll_string, baseline + roll_obj.total
+
+
+def check_dice_base(dice_str: str, baseline_value: float = 0):
+
+    num_list = dice_str.split("d")
+
+    if len(num_list) == 2:
+        try:
+            num_of_die = int(num_list[0])
+            die_sides = int(num_list[1])
+
+        except:
+            dice_str = False
+
+    else:
+        dice_str = False
+
+    try:
+        baseline_value = float(baseline_value)
+
+    except:
+        baseline_value = False
+
+
+    match dice_str, baseline_value:
+
+        case False, False:
+            return None, None
+
+        case _, False:
+            return f"{num_of_die}d{die_sides}", 0
+
+        case _, _:
+            return f"{num_of_die}d{die_sides}", baseline_value
+
+
+def roll_weather_items(location_name: str, season_dict: dict, settings_dict: dict) -> str:
+
+    def calc_temp(season_dict: dict, settings_dict: dict):
+        if "t_dice" in season_dict.keys():
+            
+            if "t_base" in season_dict.keys():
+                t_dice, t_base = check_dice_base(season_dict["t_dice"], season_dict["t_base"])
+
+            else:
+                t_dice, t_base = check_dice_base(season_dict["t_dice"], 0)
+
+            if t_dice:
+                roll_string, roll_total = roll_dice(t_dice, t_base)
+
+            else:
+                return "**Temperature:** `null`"
+
+        else:
+            return "**Temperature:** `null`"
+
+        if "temp" in settings_dict.keys():
+            if len(settings_dict["temp"]) > 0:
+                for condition, condition_dict in settings_dict["temp"].items:
+                    if roll_total >= condition_dict["min_rate"] and roll_total <= condition_dict["max_rate"]:
+                        condition_str = f"\n**Condition:**{condition}"
+                        
+                        if condition_dict["condition"] != 0:
+                            condition_str += f"\n**Effects:** {condition_dict['condition']}"
+                        
+                        else:
+                            pass
+                        
+                        break
+
+                    else:
+                        condition_str = ""
+
+            else:
+                condition_str = ""
+
+        else:
+            condition_str = ""
+
+        if settings_dict["unit"] == "imperial":
+            return f"**Temperature:** {roll_string} °F ({convert_units("mph", roll_total)} °C)" + condition_str
+
+        else:
+            return f"**Temperature:** {roll_string} °C ({convert_units("km/h", roll_total)} °F)" + condition_str
+
+        
+    def calc_water(season_dict: dict, settings_dict: dict):
+        if "wa_dice" in season_dict.keys() and "wa_conditions" in season_dict.keys():
+            wa_dice, _ = check_dice_base(season_dict["wa_dice"])
+
+            if wa_dice:
+                roll_string, roll_total = roll_dice(wa_dice, 0)
+
+            else:
+                return "**Moisture:** `null`"
+
+        else:
+            return "**Moisture:** `null`"
+
+        if "water" in settings_dict.keys():
+            if len(settings_dict["water"]) > 0:
+
+                water_condition = ""
+                water_thresholds = list(season_dict["wa_conditions"].keys())
+                water_thresholds.sort()
+
+
+
+                for threshold in water_thresholds:
+                    if roll_total >= int(threshold):
+                        water_condition = season_dict["wa_conditions"][threshold]
+
+                    else:
+                        break
+
+                if water_condition != "":
+
+                    if (search_result := search_list(water_condition, settings_dict["water"].keys())):
+
+                        if len(search_result) == 1:
+                            min_rate = settings_dict["water"][search_result[0]]["min_rate"]
+                            max_rate = settings_dict["water"][search_result[0]]["max_rate"]
+                            effects = settings_dict["water"][search_result[0]]["condition"]
+
+                        else:
+                            found = False
+                            for match in search_result:
+                                if match.lower() != water_condition.lower():
+                                    pass
+
+                                else:
+                                    min_rate = settings_dict["water"][match]["min_rate"]
+                                    max_rate = settings_dict["water"][match]["max_rate"]
+                                    effects = settings_dict["water"][match]["condition"]  
+
+                                    found = True
+                                    break
+
+
+                            if found:
+                                pass
+
+                            else:
+                                return "**Moisture:** `null`"
+
+                    else:
+                        return "**Moisture:** `null`"
+
+                else:
+                    return "**Moisture:** `null`"
+
+            else:
+                return "**Moisture:** `null`"
+
+        else:
+            return "**Moisture:** `null`"
+
+        precision = 1000000
+
+        try:
+            water_rate = round(randint(int(min_rate) * precision, int(max_rate) * precision) / precision, 2)
+
+            condition_str = f"\n**Condition:** {water_condition}"
+
+            if condition != 0:
+                condition_str += f"\n**Effects:** {effects}"
+
+            else:
+                pass
+
+        except:
+            return "**Moisture:** `null`"
+
+        if settings_dict["unit"] == "imperial":
+            return f"**Moisture** {roll_string}: {water_rate} in/hr ({convert_units("in/hr", water_rate)} mm/hr)" + condition_str
+
+        else:
+            return f"**Moisture** {roll_string}: {water_rate} mm/hr ({convert_units("mm/hr", water_rate)} in/hr)" + condition_str
+        
+    def calc_wind(season_dict: dict, settings_dict: dict):
+        if "wi_dice" in season_dict.keys() and "wi_conditions" in season_dict.keys():
+            wi_dice, _ = check_dice_base(season_dict["wi_dice"])
+
+            if wi_dice:
+                roll_string, roll_total = roll_dice(wi_dice, 0)
+
+            else:
+                return "**Wind:** `null`"
+
+        else:
+            return "**Wind:** `null`"
+
+        if "wind" in settings_dict.keys():
+            if len(settings_dict["wind"]) > 0:
+
+                wind_condition = ""
+                wind_thresholds = list(season_dict["wi_conditions"].keys())
+                wind_thresholds.sort()
+
+
+
+                for threshold in wind_thresholds:
+                    if roll_total >= int(threshold):
+                        wind_condition = season_dict["wa_conditions"][threshold]
+
+                    else:
+                        break
+
+                if wind_condition != "":
+
+                    if (search_result := search_list(wind_condition, settings_dict["wind"].keys())):
+
+                        if len(search_result) == 1:
+                            min_rate = settings_dict["wind"][search_result[0]]["min_rate"]
+                            max_rate = settings_dict["wind"][search_result[0]]["max_rate"]
+                            effects = settings_dict["wind"][search_result[0]]["condition"]
+
+                        else:
+                            found = False
+                            for match in search_result:
+                                if match.lower() != wind_condition.lower():
+                                    pass
+
+                                else:
+                                    min_rate = settings_dict["wind"][match]["min_rate"]
+                                    max_rate = settings_dict["wind"][match]["max_rate"]
+                                    effects = settings_dict["wind"][match]["condition"]  
+
+                                    found = True
+                                    break
+
+
+                            if found:
+                                pass
+
+                            else:
+                                return "**Wind:** `null`"
+
+                    else:
+                        return "**Wind:** `null`"
+
+                else:
+                    return "**Wind:** `null`"
+
+            else:
+                return "**Wind:** `null`"
+
+        else:
+            return "**Wind:** `null`"
+
+        precision = 1000000
+
+        try:
+            wind_rate = round(randint(int(min_rate) * precision, int(max_rate) * precision) / precision, 2)
+
+            condition_str = f"\n**Condition:** {wind_condition}"
+
+            if condition != 0:
+                condition_str += f"\n**Effects:** {effects}"
+
+            else:
+                pass
+
+        except:
+            return "**Wind:** `null`"
+
+        if settings_dict["unit"] == "imperial":
+            return f"**Wind** {roll_string}: {wind_rate} mph ({convert_units("mph", wind_rate)} km/h)" + condition_str
+
+        else:
+            return f"**Wind** {roll_string}: {wind_rate} km/h ({convert_units("km/h", wind_rate)} mph)" + condition_str
+
+    return "\n".join([
+        f"**{location_name}**",
+        "",
+        calc_temp(season_dict, settings_dict),
+        "",
+        calc_water(season_dict, settings_dict),
+        ""
+        calc_wind(season_dict, settings_dict)
+    ])
+
+
+def main(input_list: list[str]):
+
+    if (svar_test := get_svar("weather_dict")):
+        svar_dict = setup_svar_dict(load_json(svar_test))
+
+        settings_dict = svar_dict.pop("Settings")
+        output_list_str = []
+        
+        priority_dict = {}
+
+        if len(svar_dict.keys()) > 0:
+
+            for location_name, location_dict in svar_dict.items():
+                if "priority" in location_dict.keys():
+                    priority = str(location_dict.pop("priority"))
+
+                else:
+                    priority = "999"
+
+                if (search_result := search_list(input_list[0], location_dict.keys())):
+
+                    if len(search_result) == 1:
+
+                        if priority in priority_dict.keys():
+                            priority_dict[priority].update({location_name: location_dict[search_result[0]]})
+
+                        else:
+                            priority_dict[priority] = {location_name: location_dict[search_result[0]]}
+
+
+                    else:
+
+                        found = False
+                        for match in search_result:
+                            if match.lower() != input_list[0].lower():
+                                pass
+
+                            else:
+                                if priority in priority_dict.keys():
+                                    priority_dict[priority].update({location_name: location_dict[match]})
+
+                                else:
+                                    priority_dict[priority] = {location_name: location_dict[match]}
+
+                                found = True
+                                break
+
+                        if found:
+                            pass
+
+                        else:
+                            output_list_str.append(f"**{location_name}:**\nMultiple matching season names for {input_list[0]}")
+
+                else:
+                    output_list_str.append(f"**{location_name}:**\nNo seasonal data found for {input_list[0]}")
+
+        else:
+            return "You Have Been Sneak Attacked by an Error", "Weather settings have not been setup", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/error.png", "#CF142B"
+
+        # priority_dict = {"999": {"Haell": {}}}
+
+        priority_order = list(priority_dict.keys())
+        priority_order.sort()
+
+        i = 0
+
+        for priority_num in priority_order:
+            location_order = list(priority_dict[priority_num].keys())
+            location_order.sort()
+
+            for location in location_order:
+                output_list_str.insert(i, roll_weather_items(location, priority_dict[priority_num][location], settings_dict))
+                i += 1
+
+    else:
+        return "You Have Been Sneak Attacked by an Error", "Weather settings have not been setup", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/error.png", "#CF142B"
+
+
+    if (search_result := search_list(input_list[0], settings_dict["url"].keys())):
+
+        if len(search_result) == 1:
+            img_url = settings_dict["url"][search_result[0]]
+
+        else:
+            found = False
+
+            for match in search_result:
+                if match.lower() != input_list[0].lower():
+                    pass
+
+                else:
+                    img_url = settings_dict["url"][match]
+
+                    found = True
+                    break
+
+            if found:
+                pass
+
+            else:
+                img_url = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/main.png"
+
+    else:
+        img_url = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/main.png"
+
+    if (search_result := search_list(input_list[0], settings_dict["color"].keys())):
+
+        if len(search_result) == 1:
+            season = search_result[0]
+
+            if len(settings_dict["color"][search_result[0]]) > 0:
+                color = randchoice(settings_dict["color"][search_result[0]])
+
+            else:
+                color = ""
+
+        else:
+            found = False
+
+            for match in search_result:
+                if match.lower() != input_list[0].lower():
+                    pass
+
+                else:
+                    if len(settings_dict["color"][match]) > 0:
+                        color = randchoice(settings_dict["color"][match])
+
+                    else:
+                        color = ""
+
+                    season = match
+                    break
+
+            if found:
+                pass
+
+            else:
+                color = ""
+                season = input_list[0]
+
+    else:
+        color = ""
+        season = input_list[0]
+    
+    return f"{ctx.author.display_name} Generates a Weather Report for {season}", "\n".join(output_list_str), img_url, color
+
+
+title, f, thumb, color = main(&ARGS&)
+
+
+</drac2>
+-title "{{title}}"
+-f "{{f}}"
+-thumb "{{thumb}}"
+-color "{{color}}"
+-footer "{{ctx.prefix}}weather [season] | 1/28/24 | ShadowsStride"

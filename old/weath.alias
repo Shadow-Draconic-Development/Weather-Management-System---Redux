@@ -1,0 +1,14 @@
+embed
+<drac2>
+# *******************************************************
+# * This work includes material written by Seth Hartman (aka ShadowsStride)
+# * and is licensed under the Creative Commons Attribution 4.0 International License 
+# * available at https://creativecommons.org/licenses/by/4.0/legalcode.
+# *******************************************************
+
+
+</drac2>
+-title "{{ctx.author.display_name}} has encountered an error"
+-f "`!weath [season]` has been depreciated. Please use `!weather [season]` instead"
+-thumb "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/image.png"
+-color "#CC0202"

@@ -1,0 +1,448 @@
+embed
+<drac2>
+# *******************************************************
+# * This work includes material taken from the System Reference Document 5.1 
+# * (“SRD 5.1”) by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. 
+# * The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License 
+# * available at https://creativecommons.org/licenses/by/4.0/legalcode.
+# * 
+# * This work includes material written by Seth Hartman (aka ShadowsStride)
+# * and is licensed under the Creative Commons Attribution 4.0 International License 
+# * available at https://creativecommons.org/licenses/by/4.0/legalcode.
+# *******************************************************
+
+
+def search_key(query: str, key_list: list[str]) -> list[str]|str:
+    """
+    Searches for dictionary key.
+
+    Args:
+        query (str): The query being made
+        key_list (list): List of keys
+
+    Return:
+        (str): If it finds it, it returns the key, otherwise it returns 'None'
+    """
+
+    # Creates list to store matches
+    key_results = []
+
+    # Checks each item if a match occurs
+    for key in key_list:
+
+        # If matches
+        if query.lower() in key.lower():
+            key_results.append(key)
+
+        else:
+            pass
+
+    # Finds at least 1 match
+    if len(key_results) > 0:
+        return key_results
+
+    # If it finds no matches
+    else:
+        return 'None'
+
+
+def roll_dice(dice_type:str, baseline: int = 0) -> list:
+    """
+    Rolls dice and puts together string to use.
+
+    Args:
+        dice_type (str): What dice to roll
+        baseline (int): What to add to the dice roll
+
+    Return:
+        (list): List of results
+
+    """
+    
+    # Rolls dice
+    roll_obj = vroll(dice_type)
+
+    # If baseline is 0
+    if baseline == 0:
+        roll_string = f"{roll_obj.dice} = {roll_obj.total}"
+    
+    # If baseline is not 0
+    else:
+        roll_string = f"{roll_obj.dice} + {baseline} = {baseline + roll_obj.total}"
+
+    return [roll_string, baseline + roll_obj.total]
+
+
+def to_celsius(degrees: int) -> float:
+    """
+    Converts Fahrenheit to Celsius
+
+    Args:
+        degrees (int): Temperature to be converted
+
+    Return:
+        (float): Results of the conversion
+
+    """
+    return round((degrees - 32) * (5/9), 1)
+
+
+def get_season(season:str, dict_keys: list[str], location_name: str) -> list[str]:
+    """
+    Searches for the season
+
+    Args:
+        season (str): Season to grab
+        dict_keys (list[str]): List of valid seasons
+        location_name (str): Name of location
+
+    Return:
+        (list[str]): Result    
+    """
+
+    key_result = search_key(season, dict_keys)
+
+    # If there is at least one match
+    if key_result != 'None':
+
+        # Exactly one match
+        if len(key_result) == 1:
+            return ['Success', key_result[0]]
+
+        # If there are more than one match
+        else:
+            for key in key_result:
+                if season.lower() == key.lower():
+                    return ["Success", key]
+
+                else:
+                    pass
+
+            key_result.insert(0, f"**Multiple Seasons Found For {location_name}:**")
+            return ['Error', "\n".join(key_result)]
+
+    # No matches
+    else:
+        return ['Error', f'Season not found for {location_name}!']
+
+
+def get_temperature(temp_dice: str, temp_base: int, location_name: str) -> list[str]:
+    """
+    Grabs and rolls temperature
+    
+    Args:
+        temp_dice (str): String to roll the dice
+        temp_base (int): Base temperature
+        location_name (str): Name of location
+
+    Return:
+        (list[str]): Result
+    """
+
+    try:
+        results = roll_dice(temp_dice, temp_base)
+        
+        return ['Success', f'{results[0]} degrees fahrenheit ({to_celsius(results[1])} degrees celsius)\n' + "", results[1]]
+
+    except:
+        return ['Error', f'Problems rolling temperature for {location_name}']
+
+
+def get_water(water_chance_dice: str, water_roll_thresholds: dict, location_name: str, temp: int) -> list[str]:
+    """
+    Rolls moisture conditions
+    
+    Args:
+        water_chance_dice (str): String to roll the dice
+        water_roll_thresholds (dict): Dictionary containing thresholds
+        location_name (str): Name of location
+        temp (int): Temperature
+
+    Return:
+        (list[str]): Result
+    """
+
+    try: 
+        results = roll_dice(water_chance_dice)
+
+        # Iterates through water thresholds
+        for key in water_roll_thresholds.keys():
+            if results[1] >= int(key):
+                water_result = water_roll_thresholds[key]
+            
+            else:
+                pass
+        lower_water_result = water_result.lower()
+
+        # If heavy moisture
+        if lower_water_result == "heavy":
+            water_rate = randint(5, 20) / 10
+            disadv = "Disadvantage on Wisdom (Perception) checks"
+
+        # Heavy fog
+        elif lower_water_result == 'heavy fog':
+            water_rate = 0
+            disadv = "Disadvantage on sight-based Wisdom (Perception) checks"
+
+        # light moisture
+        elif lower_water_result == 'light':
+            water_rate = randint(1, 3) / 10
+            disadv = "None"
+
+        # No moisture
+        else:
+            water_rate = 0
+            disadv = "None"
+
+        # Determines ice or rain
+        if lower_water_result == 'light' or lower_water_result == 'heavy':
+            if temp > 32:
+                water_result = f"{results[0]}: `{water_result} Rain`  {water_rate} in/hr ({round(water_rate * 25.4,1)} mm/hr)"
+
+            else:
+                water_result = f"{results[0]}: `{water_result} Snow`  {water_rate} in/hr ({round(water_rate * 25.4,1)} mm/hr)"
+
+        # No moisture
+        else:
+            water_result = f"{results[0]}: `{water_result}`"
+
+        # Adds disadvantage the joins
+        if disadv != "None":
+            water_result = "\n".join(["**Moisture:**", water_result, f"**{disadv}**", ""])
+
+        # Joins answer
+        else:
+            water_result = "\n".join(["**Moisture:**", water_result, ""])
+
+        return ['Success', water_result]
+
+    # If there was an error
+    except:
+        return ['Error', f'Problems rolling water for {location_name}']
+
+
+def get_wind(wind_chance_dice: str, wind_roll_thresholds: dict, location_name: str) -> list[str]:
+    """
+    Rolls wind conditions
+    
+    Args:
+        wind_chance_dice (str): String to roll the dice
+        wind_roll_thresholds (dict): Dictionary containing thresholds
+        location_name (str): Name of location
+
+    Return:
+        (list[str]): Result
+    """
+
+    try: 
+        results = roll_dice(wind_chance_dice)
+
+        # Iterates through wind thresholds
+        for key in wind_roll_thresholds.keys():
+            if results[1] >= int(key):
+                wind_result = wind_roll_thresholds[key]
+            
+            else:
+                pass
+        lower_wind_result = wind_result.lower()
+
+        # Heavy wind, sets wind speed, adds disadvantage note (also converts from mph to km/h)
+        if lower_wind_result == "heavy wind":
+            wind_rate = randint(25,54)
+            wind_result = f"{results[0]}: `{wind_result}`  {wind_rate} mph ({round(wind_rate * 1.60934, 1)} km/h)"
+            disadv = "Disadvantage on ranged weapon attacks"
+
+        # Light wind, sets wind speed (also converts from mph to km/h)
+        elif lower_wind_result == "light wind":
+            wind_rate = randint(8,54)
+            wind_result = f"{results[0]}: `{wind_result}`  {wind_rate} mph ({round(wind_rate * 1.60934, 1)} km/h)"
+            disadv = "None"
+
+        # Gentle breeze, sets wind speed (also converts from mph to km/h)
+        elif lower_wind_result == "gentle breeze":
+            wind_rate = randint(1,7)
+            wind_result = f"{results[0]}: `{wind_result}`  {wind_rate} mph ({round(wind_rate * 1.60934, 1)} km/h)"
+            disadv = "None"
+
+        # No wind
+        else:
+            wind_result = f"{results[0]}: `{wind_result}`"
+            disadv = "None"
+
+        # Add disadvantage, then join answer
+        if disadv != "None":
+            wind_result = '\n'.join(["**Wind:**", wind_result, f"**{disadv}**", ""])
+
+        # Join answer
+        else:
+            wind_result = '\n'.join(["**Wind:**", wind_result, ""])
+
+        return ["Success", wind_result]
+
+    # If there was an error
+    except:
+        return ["Error", f'Problems rolling wind for {location_name}']
+
+
+def get_weather(season: str) -> list[str]:
+    """
+    Main driver function to grab weather conditions
+    
+    Args:
+        season: Season name
+
+    Return:
+        (list[str]): Result
+    """
+
+    result_list = []
+
+    weather_settings_test = get_svar("weather_location_list", default="None")
+
+    if weather_settings_test != "None":
+        weather_settings_dict = load_json(weather_settings_test)
+    
+    else:
+        return ['Error', '`weather_location_list` svar is missing']
+
+    for location in weather_settings_dict.values():
+        location_test = get_svar(location, default="None")
+
+        # If it finds the locations svar
+        if location_test != "None":
+            location_dict = load_json(location_test)
+
+            try:
+                result_list.append(f"**{location_dict['name']}**")
+
+            except:
+                return ['Error', f'svar `{location}` is missing a name property']
+
+            results = get_season(season, location_dict.keys(), location_dict['name'])
+
+            # Grabs season settings
+            if results[0] != 'Error':
+                season_settings = location_dict[results[1]]
+
+                # Roll temperature
+                results = get_temperature(season_settings['temp_dice'], season_settings['temp_base'], location_dict['name'])
+                
+            else:
+                return results
+
+            # If there are no errors
+            if results[0] != "Error":
+
+                # Append temperature to result_list
+                result_list.append(results[1])
+
+                # Roll water
+                results2 = get_water(season_settings['water_chance_dice'], season_settings['water_roll_thresholds'], location_dict['name'], results[2])
+
+            else:
+                return results
+
+            # If there are no errors
+            if results2[0] != "Error":
+
+                # Append water to result_list
+                result_list.append(results2[1])
+
+                # Roll wind
+                results3 = get_wind(season_settings['wind_chance_dice'], season_settings['wind_roll_thresholds'], location_dict['name'])
+                
+
+            else:
+                return results2
+
+            # If there are no errors
+            if results3[0] != "Error":
+
+                # Append wind to result_list
+                result_list.append(results3[1])
+
+            else:
+                return results3
+
+            result_list.append("")
+        
+        # If it finds the location svar
+        else:
+            return ['Error', f'svar `{location}` does not exist']
+
+    try:
+        img_url = weather_settings_dict[img_url]
+
+    except:
+        img_url = "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/image.png"
+
+    return ['Success', "\n".join(result_list), img_url]
+
+
+def main(input_list: list[str]) -> list[str]:
+    """
+    Main program function
+
+    Args:
+        input_list (list[str]): Input list
+
+    Return:
+        (list[str]): Result
+    """
+
+    # If there is at least one input
+    if len(input_list) >= 1:
+
+        # Grabs results
+        results = get_weather(input_list[0])
+
+        # If there was not an error
+        if results[0] != "Error":
+
+            lower_input = input_list[0].lower()
+
+            # If season is fall/autumn
+            if lower_input in "fall" or lower_input in "autumn":
+                color = randchoice(['#3c1518', '#69140e', '#a44200', '#d58936', '#f2f3ae'])
+                img_url = "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/fall.png"
+
+            # If season is summer
+            elif lower_input in "summer":
+                color = randchoice(["#e70c23", "#f1c0d6", "#fad808", "#e6ebf3", "#366290"])
+                img_url = "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/summer.png"
+
+            # If season is spring
+            elif lower_input in "spring":
+                color = randchoice(["#0C6301", "#60AF02", "#F8E27F", "#FEC900", "#850D52"])
+                img_url = "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/spring.png"
+
+            # If season is winter
+            elif lower_input in "winter":
+                color = randchoice(["#04b4fc", "#61cff8", "#165c96", "#56789f", "#8db2cd"])
+                img_url = "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/winter.png"
+
+            # Other
+            else:
+                color = ""
+                img_url = results[2]
+
+            return [f"The daily weather report by {ctx.author.display_name}", results[1], color, img_url]
+
+        # If there was an error
+        else:
+            return [f"{ctx.author.display_name} encountered an error running the daily weather report", results[1], "#CC0202", "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/image.png"]
+
+    # If there was not at least one input
+    else:
+        return [f"{ctx.author.display_name} encountered an error running the daily weather report", "Expected 1 argument", "#CC0202", "https://raw.githubusercontent.com/SethHartman13/Avrae-Aliases-Snippets/master/Aliases/weather/image.png"]
+
+
+# Main program function
+output = main(&ARGS&)
+
+</drac2>
+-title "{{output[0]}}"
+-f "{{output[1]}}"
+-color "{{output[2]}}"
+-thumb "{{output[3]}}"
+-footer "!weather [season] | Updated 9/8/2023 | ShadowsStride"

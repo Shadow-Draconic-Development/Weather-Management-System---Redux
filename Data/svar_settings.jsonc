@@ -1,0 +1,131 @@
+{
+    "Settings": {
+        "water": {
+            "Clear": {
+            },
+            "Light Moisture": {
+                "min_rate": 0.07,
+                "max_rate": 0.15
+            },
+            "Moderate Moisture": {
+                "min_rate": 0.15,
+                "max_rate": 0.23
+            },
+            "Strong Moisture": {
+                "min_rate": 0.59,
+                "max_rate": 1.5,
+                "condition": "See [Heavy Precipitation](https://www.dndbeyond.com/sources/dmg/adventure-environments#HeavyPrecipitation)"
+            },
+            "Heavy Fog": {
+                "condition": "Disadvantage on sight-based perception checks"
+            }
+        },
+        "wind": {
+            "None": {
+            },
+            "Light Air": {
+                "min_rate": 1,
+                "max_rate": 4
+            },
+            "Light Breeze": {
+                "min_rate": 4,
+                "max_rate": 8
+            },
+            "Gentle Breeze": {
+                "min_rate": 8,
+                "max_rate": 13
+            },
+            "Moderate Breeze": {
+                "min_rate": 13,
+                "max_rate": 19
+            },
+            "Fresh Breeze": {
+                "min_rate": 19,
+                "max_rate": 25
+            },
+            "Strong Breeze": {
+                "min_rate": 25,
+                "max_rate": 32,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            },
+            "High Wind": {
+                "min_rate": 32,
+                "max_rate": 39,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            },
+            "Gale": {
+                "min_rate": 39,
+                "max_rate": 47,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            },
+            "Strong Gale": {
+                "min_rate": 47,
+                "max_rate": 55,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            },
+            "Storm Gale": {
+                "min_rate": 55,
+                "max_rate": 64,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            },
+            "Violent Storm": {
+                "min_rate": 64,
+                "max_rate": 73,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            },
+            "Hurricane Force": {
+                "min_rate": 73,
+                "max_rate": 100,
+                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
+            }
+        },
+        "temp": {
+            "Extreme Cold": {
+                "min_rate": -999,
+                "max_rate": 0,
+                "condition": "See [Extreme Cold](https://www.dndbeyond.com/sources/dmg/adventure-environments#ExtremeCold)"
+            },
+            "Extreme Heat": {
+                "min_rate": 100,
+                "max_rate": 999,
+                "condition": "See [Extreme Heat](https://www.dndbeyond.com/sources/dmg/adventure-environments#ExtremeHeat)"
+            }
+        },
+        "unit": "imperial",
+        "url": {
+            "Fall": "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/fall.png",
+            "Spring": "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/spring.png",
+            "Summer": "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/summer.png",
+            "Winter": "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/winter.png"
+        },
+        "color": {
+            "Fall": ["#FF2E00", "#FF5D00", "#FF7F00", "#FF9C00", "#FFB700"],
+            "Spring": ["#0C6301", "#60AF02", "#F8E27F", "#FEC900", "#850D52"],
+            "Summer": ["#E70C23", "#F1C0D6", "#FAD808", "#E6EBF3", "#366290"],
+            "Winter": ["#04B4FC", "#61CFF8", "#165C96", "#56789F", "#8DB2CD"]
+        }
+    },
+    "Haell": {
+        "priority": 999,
+        "Season": {
+            "t_dice": "2d10",
+            "t_base": 32,
+            "wa_dice": "1d20",
+            "wa_conditions": {
+                "1": "Clear",
+                "9": "Heavy Fog",
+                "10": "Light Moisture",
+                "15": "Moderate Moisture",
+                "20": "Strong Moisture"
+            },
+            "wi_dice": "1d100",
+            "wi_conditions": {
+                "1":"None",
+                "40": "Light Air",
+                "50": "Light Breeze",
+                "90": "Strong Breeze",
+                "100": "High Wind"
+            }
+        }
+    }
+}
