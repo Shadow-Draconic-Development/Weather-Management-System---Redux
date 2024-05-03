@@ -1,0 +1,3 @@
+*.alias linguist-language=Python
+*.snippet linguist-language=Python
+*.jsonc linguist-language=Json
