@@ -1,0 +1,125 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 10px;
+}
+
+/* Header Container Styles */
+.header-container {
+    display: flex;
+    justify-content: flex-end; /* Align children to the right */
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative; /* To allow centering the h1 */
+}
+
+/* Style for h1 */
+h1 {
+    position: absolute; /* Position absolute to center within header-container */
+    left: 50%; /* Move h1 to center */
+    transform: translateX(-50%); /* Adjust position to center */
+}
+
+
+img {
+    margin-left: auto; /* Push img to the right */
+}
+
+fieldset {
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+legend {
+    padding: 0 10px;
+}
+
+button {
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background-color: var(--button-background);
+    color: var(--button-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--button-hover-background);
+}
+
+select {
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+#output {
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Link section */
+nav {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+nav a {
+    color: var(--link-color);
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 1.2rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Dark Mode */
+:root {
+    --background-color: #f0f0f0;
+    --text-color: #333;
+    --button-background: #007bff;
+    --button-color: #fff;
+    --button-hover-background: #0056b3;
+    --border-color: #ccc;
+    --link-color: #007bff;
+}
+
+.dark-mode {
+    --background-color: #333;
+    --text-color: #f0f0f0;
+    --button-background: #495057;
+    --button-color: #fff;
+    --button-hover-background: #343a40;
+    --border-color: #495057;
+    --link-color: #17a2b8;
+}
+
+/* Header Styles */
+.header-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    display: flex;
+    align-items: center;
+    font-size: 2.5rem;
+}
+
+img {
+    margin-right: 10px;
+}
+
