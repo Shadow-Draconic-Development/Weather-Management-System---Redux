@@ -108,18 +108,38 @@
     "Haell": {
         "priority": 999,
         "Season": {
-            "t_dice": "2d10",
-            "t_base": 32,
-            "wa_dice": "1d20",
-            "wa_conditions": {
+            "temp_dice": "2d10",
+            "temp_base": 32,
+            "water_dice": "1d20",
+            "water_conditions": {
                 "1": "Clear",
                 "9": "Heavy Fog",
                 "10": "Light Moisture",
                 "15": "Moderate Moisture",
                 "20": "Strong Moisture"
             },
-            "wi_dice": "1d100",
-            "wi_conditions": {
+            "wind_dice": "1d100",
+            "wind_conditions": {
+                "1":"None",
+                "40": "Light Air",
+                "50": "Light Breeze",
+                "90": "Strong Breeze",
+                "100": "High Wind"
+            }
+        },
+        "Season2": {
+            "temp_dice": "2d10",
+            "temp_base": 32,
+            "water_dice": "1d20",
+            "water_conditions": {
+                "1": "Clear",
+                "9": "Heavy Fog",
+                "10": "Light Moisture",
+                "15": "Moderate Moisture",
+                "20": "Strong Moisture"
+            },
+            "wind_dice": "1d100",
+            "wind_conditions": {
                 "1":"None",
                 "40": "Light Air",
                 "50": "Light Breeze",

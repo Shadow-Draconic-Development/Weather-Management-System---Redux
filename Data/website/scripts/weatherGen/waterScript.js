@@ -137,6 +137,29 @@ function validateMinMaxRates() {
     return true;
 }
 
+function collectWaterSettings() {
+    // Implement data collection from water form inputs here
+    // Return an object or data structure representing water settings
+    // Example:
+    const waterData = {};
+    const container = document.getElementById("waterSettingsContainer");
+    const fieldsets = container.querySelectorAll("fieldset");
+    fieldsets.forEach((fieldset) => {
+        const name = fieldset.querySelector("input[type='text']").value;
+        const minRate = parseFloat(fieldset.querySelector("input[type='number'][id^='waterSettingMinRate']").value);
+        const maxRate = parseFloat(fieldset.querySelector("input[type='number'][id^='waterSettingMaxRate']").value);
+        const condition = fieldset.querySelector("input[type='text']").value;
+        if (name && !isNaN(minRate) && !isNaN(maxRate) && condition) {
+            waterData[name] = {
+                minRate,
+                maxRate,
+                condition,
+            };
+        }
+    });
+    return waterData;
+}
+
 // Function to create an input element with a label
 function createInputElement(id, type, labelText, step = null) {
     const label = document.createElement("label");
@@ -159,4 +182,4 @@ function createInputElement(id, type, labelText, step = null) {
 document.getElementById("addWaterSetting").addEventListener("click", createWaterSetting);
 
 // Export the waterSettings array
-export { waterSettings, validateWaterSettings, validateMinMaxRates };
+export { waterSettings, validateWaterSettings, validateMinMaxRates, collectWaterSettings};

@@ -155,8 +155,32 @@ function createInputElement(id, type, labelText, step = null) {
     return { label, input };
 }
 
+function collectWindSettings() {
+    // Implement data collection from wind form inputs here
+    // Return an object or data structure representing wind settings
+    // Example:
+    const windData = {};
+    const container = document.getElementById("windSettingsContainer");
+    const fieldsets = container.querySelectorAll("fieldset");
+    fieldsets.forEach((fieldset) => {
+        const name = fieldset.querySelector("input[type='text']").value;
+        const minRate = parseFloat(fieldset.querySelector("input[type='number'][id^='windSettingMinRate']").value);
+        const maxRate = parseFloat(fieldset.querySelector("input[type='number'][id^='windSettingMaxRate']").value);
+        const condition = fieldset.querySelector("input[type='text']").value;
+        if (name && !isNaN(minRate) && !isNaN(maxRate) && condition) {
+            windData[name] = {
+                minRate,
+                maxRate,
+                condition,
+            };
+        }
+    });
+    return windData;
+}
+
+
 // Add event listener to the "Add Wind Setting" button
 document.getElementById("addWindSetting").addEventListener("click", createWindSetting);
 
 // Export the windSettings array
-export { windSettings, validateWindSettings, validateWindMinMaxRates };
+export { windSettings, validateWindSettings, validateWindMinMaxRates, collectWindSettings };

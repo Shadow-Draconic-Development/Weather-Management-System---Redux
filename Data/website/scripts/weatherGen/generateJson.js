@@ -1,12 +1,12 @@
 // Import necessary functions from other scripts
 import { collectSeasonUrls } from './seasonUrlScript.js';
-import { waterSettings } from './waterScript.js';
-import { windSettings } from './windScript.js';
-import { temperatureSettings } from './tempScript.js';
+import { collectWaterSettings } from './waterScript.js';
+import { collectWindSettings } from './windScript.js';
+import { collectTempSettings } from './tempScript.js';
 import { collectColorSettings } from './colorScript.js';
 
 // Function to generate a JSON object based on all settings
-async function generateJSON(waterSettings, windSettings, temperatureSettings) {
+async function generateJSON() {
     // Create a JSON object to hold the settings
     const settings = {
         water: {},
@@ -17,16 +17,47 @@ async function generateJSON(waterSettings, windSettings, temperatureSettings) {
         unit: "",
     };
 
+    // Collect water settings using the imported function
+    const waterSettings = collectWaterSettings();
+    if (waterSettings === null) {
+        alert("Error collecting water settings. Please check the inputs and try again.");
+        return null; // Stop function execution
+    }
+
+    // Add the collected water settings to the settings object
+    settings.water = waterSettings;
+
+    // Collect water settings using the imported function
+    const windSettings = collectWindSettings();
+    if (windSettings === null) {
+        alert("Error collecting wind settings. Please check the inputs and try again.");
+        return null; // Stop function execution
+    }
+
+    // Add the collected water settings to the settings object
+    settings.wind = windSettings;
+
+    // Collect water settings using the imported function
+    const tempSettings = collectTempSettings();
+    if (tempSettings === null) {
+        alert("Error collecting temperature settings. Please check the inputs and try again.");
+        return null; // Stop function execution
+    }
+
+    // Add the collected water settings to the settings object
+    settings.temperature = tempSettings;
+
     // Collect color settings
     const colorSettings = collectColorSettings();
     
-    // If there is an error during color settings collection, stop execution and inform user
+    // If there is an error during color settings collection, stop execution and inform the user
     if (colorSettings === null) {
         alert("Error collecting color settings. Please check the inputs and try again.");
         return null; // Stop function execution
     }
     
-    // Collect water, wind, and temperature settings here...
+    // Add the validated color settings to the settings object
+    settings.colors = colorSettings;
 
     // Collect season URLs and check validation
     const { imageUrls, urlsValid } = await collectSeasonUrls();
@@ -38,9 +69,6 @@ async function generateJSON(waterSettings, windSettings, temperatureSettings) {
     // Add the validated season URLs to the settings object
     settings.url = imageUrls;
 
-    // Add the validated color settings to the settings object
-    settings.colors = colorSettings;
-
     // Collect the unit setting from the input element with ID "unit"
     const unitInput = document.getElementById("unit");
     if (unitInput) {
@@ -50,6 +78,7 @@ async function generateJSON(waterSettings, windSettings, temperatureSettings) {
     // Return the settings JSON object
     return settings;
 }
+
 
 // Function to copy JSON string to clipboard
 function copyJSONToClipboard(jsonObject) {
@@ -78,11 +107,11 @@ function copyJSONToClipboard(jsonObject) {
 // Initialization after document is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
     // Only initialize form submission when the document is fully loaded
-    initializeFormSubmission(waterSettings, windSettings, temperatureSettings);
+    initializeFormSubmission();
 });
 
 // Function to handle form submission and user interactions
-async function initializeFormSubmission(waterSettings, windSettings, temperatureSettings) {
+async function initializeFormSubmission() {
     // Define the color settings; don't collect them here
     // Wait for user interactions or form submission to trigger the function
     let colorSettings = null;
@@ -105,7 +134,7 @@ async function initializeFormSubmission(waterSettings, windSettings, temperature
         colorSettings = collectColorSettings();
 
         // Generate a JSON object based on water, wind, temperature, and color settings
-        const jsonObject = await generateJSON(waterSettings, windSettings, temperatureSettings);
+        const jsonObject = await generateJSON();
 
         // If the JSON object is valid, proceed to copy it to the clipboard
         if (jsonObject) {

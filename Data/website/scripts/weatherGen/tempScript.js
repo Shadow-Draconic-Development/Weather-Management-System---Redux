@@ -19,8 +19,8 @@ function createTemperatureSetting() {
 
     // Create input elements for the temperature setting
     const nameInput = createInputElement(`temperatureSettingName${temperatureSettingCount}`, "text", "Setting Name:");
-    const minTempInput = createInputElement(`temperatureSettingMinTemp${temperatureSettingCount}`, "number", "Min Temp:");
-    const maxTempInput = createInputElement(`temperatureSettingMaxTemp${temperatureSettingCount}`, "number", "Max Temp:");
+    const minTempInput = createInputElement(`temperatureSettingMinTemp${temperatureSettingCount}`, "number", "Min Temp:", 0.01);
+    const maxTempInput = createInputElement(`temperatureSettingMaxTemp${temperatureSettingCount}`, "number", "Max Temp:", 0.01);
     const conditionInput = createInputElement(`temperatureSettingCondition${temperatureSettingCount}`, "text", "Condition:");
 
     // Append all inputs and labels to the fieldset
@@ -155,8 +155,31 @@ function createInputElement(id, type, labelText, step = null) {
     return { label, input };
 }
 
+function collectTempSettings() {
+    // Implement data collection from temperature form inputs here
+    // Return an object or data structure representing temperature settings
+    // Example:
+    const temperatureData = {};
+    const container = document.getElementById("temperatureSettingsContainer");
+    const fieldsets = container.querySelectorAll("fieldset");
+    fieldsets.forEach((fieldset) => {
+        const name = fieldset.querySelector("input[type='text']").value;
+        const minRate = parseFloat(fieldset.querySelector("input[type='number'][id^='temperatureSettingMinTemp']").value);
+        const maxRate = parseFloat(fieldset.querySelector("input[type='number'][id^='temperatureSettingMaxTemp']").value);
+        const condition = fieldset.querySelector("input[type='text']").value;
+        if (name && !isNaN(minRate) && !isNaN(maxRate) && condition) {
+            temperatureData[name] = {
+                minRate,
+                maxRate,
+                condition,
+            };
+        }
+    });
+    return temperatureData;
+}
+
 // Add event listener to the "Add Temperature Setting" button
 document.getElementById("addTemperatureSetting").addEventListener("click", createTemperatureSetting);
 
 // Export the temperatureSettings array
-export { temperatureSettings, validateTemperatureSettings, validateTemperatureMinMax };
+export { temperatureSettings, validateTemperatureSettings, validateTemperatureMinMax, collectTempSettings };
