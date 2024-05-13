@@ -1,0 +1,79 @@
+multiline
+<drac2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def main(dict_input: dict):
+
+    dict_keys = set(list(dict_input.keys()))
+
+    if len(dict_keys.intersection({"water", "wind", "temp", "unit", "url", "color"})) > 0:
+        import_type = "general"
+
+    elif "priority" in list(dict_keys)[0].keys():
+        import_type = "location"
+
+    else:
+        return "embed -title 'You Have Been Sneak Attacked By an Error' "
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</drac2>
