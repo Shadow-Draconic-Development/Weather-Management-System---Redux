@@ -14,7 +14,7 @@ function createTemperatureSetting() {
 
     // Create a legend for the fieldset
     const legend = document.createElement("legend");
-    legend.textContent = `Temperature Setting ${temperatureSettingCount}`;
+    legend.textContent = `Temperature Setting`;
     fieldset.appendChild(legend);
 
     // Create input elements for the temperature setting

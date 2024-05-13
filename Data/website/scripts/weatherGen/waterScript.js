@@ -14,7 +14,7 @@ function createWaterSetting() {
 
     // Create a legend for the fieldset
     const legend = document.createElement("legend");
-    legend.textContent = `Water Setting ${waterSettingCount}`;
+    legend.textContent = `Water Setting`;
     fieldset.appendChild(legend);
 
     // Create input elements for the water setting

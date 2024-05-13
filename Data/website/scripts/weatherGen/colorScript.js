@@ -14,7 +14,7 @@ function addColor() {
     // Create input elements for the season name and colors
     const seasonNameLabel = document.createElement("label");
     seasonNameLabel.htmlFor = `colorSeasonName${colorCount}`;
-    seasonNameLabel.textContent = `Season Name ${colorCount}:`;
+    seasonNameLabel.textContent = `Season Name:`;
 
     const seasonNameInput = document.createElement("input");
     seasonNameInput.type = "text";

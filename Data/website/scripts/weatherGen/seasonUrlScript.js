@@ -26,7 +26,7 @@ function addSeasonUrl() {
     // Create input elements for the season name and URL
     const seasonNameLabel = document.createElement("label");
     seasonNameLabel.htmlFor = `seasonName${seasonUrlCount}`;
-    seasonNameLabel.textContent = `Season Name ${seasonUrlCount}:`;
+    seasonNameLabel.textContent = `Season Name:`;
 
     const seasonNameInput = document.createElement("input");
     seasonNameInput.type = "text";

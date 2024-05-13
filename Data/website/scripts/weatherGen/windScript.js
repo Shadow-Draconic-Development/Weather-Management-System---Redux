@@ -14,7 +14,7 @@ function createWindSetting() {
 
     // Create a legend for the fieldset
     const legend = document.createElement("legend");
-    legend.textContent = `Wind Setting ${windSettingCount}`;
+    legend.textContent = `Wind Setting`;
     fieldset.appendChild(legend);
 
     // Create input elements for the wind setting
