@@ -1,8 +1,7 @@
 {
     "Settings": {
         "water": {
-            "Clear": {
-            },
+            "Clear": {},
             "Light Moisture": {
                 "min_rate": 0.07,
                 "max_rate": 0.15
@@ -21,8 +20,7 @@
             }
         },
         "wind": {
-            "None": {
-            },
+            "None": {},
             "Light Air": {
                 "min_rate": 1,
                 "max_rate": 4
@@ -120,7 +118,7 @@
             },
             "wind_dice": "1d100",
             "wind_conditions": {
-                "1":"None",
+                "1": "None",
                 "40": "Light Air",
                 "50": "Light Breeze",
                 "90": "Strong Breeze",
@@ -140,7 +138,7 @@
             },
             "wind_dice": "1d100",
             "wind_conditions": {
-                "1":"None",
+                "1": "None",
                 "40": "Light Air",
                 "50": "Light Breeze",
                 "90": "Strong Breeze",
