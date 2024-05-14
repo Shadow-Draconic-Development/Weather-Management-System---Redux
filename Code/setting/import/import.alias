@@ -2,35 +2,93 @@ multiline
 <drac2>
 
 
+def validate_svar_dict(svar_dict: dict)
 
 
 
+# Cycle through the SVAR and validate it, removing any items that it has problems with 
+
+# (start at removing season -> location) for locations
+# (start at removing specific condition -> measurement)
 
 
+def edit_general_settings(dict_input: dict, svar_dict: dict):
+
+    error_list = []
+
+    # Grabbing water, wind, etc.
+    for outer_key, outer_value in dict_input.items():
+
+        if outer_key in ["water", "wind", "temp", "unit", "url", "color"]
+            svar_dict["Settings"][outer_key] = outer_value
+
+        else:
+            error_list.append(f"{outer_key} is not a valid setting for general settings.")
 
 
+    return validate_svar_dict(svar_dict, error_list)
 
+def edit_location_settings(dict_input: dict, svar_dict: dict):
 
+    error_list = []
 
+    # Location, location dict
+    for outer_key, outer_value in dict_input.items():
 
+        # If priority is not in location dict
+        if not "priority" in outer_value.keys():
+            error_list.append(f"{outer_key} does not have a priority")
 
+        # If priority is in location dict
+        else:
+            svar_dict[outer_key] = {"priority": outer_value.pop("priority")}
 
+            # For each season name, season value within location dict
+            for key, value in outer_value.items():
 
+                svar_dict[outer_key][key] = {}
 
+                # For each seasons setting, season setting value within season
+                for inner_key, inner_value in value.items():
+
+                    if inner_key in ["temp_dice", "temp_base", "water_conditions", "wind_dice", "wind_conditions"]:
+                        svar_dict[outer_key][key][inner_key] = inner_value
+
+                    else:
+                        error_list.append(f"Season {key} in location {outer_key} contains an invalid setting (`{inner_key}`)")
+     
+    return validate_svar_dict(svar_dict, error_list)
 
 
 def main(dict_input: dict):
 
     dict_keys = set(list(dict_input.keys()))
 
-    if len(dict_keys.intersection({"water", "wind", "temp", "unit", "url", "color"})) > 0:
-        import_type = "general"
+    if not svar_dict := get_svar("weather_settings"):
+        svar_dict = {
+            "Settings": {
+                "water": {},
+                "wind": {},
+                "temp": {},
+                "unit": "imperial",
+                "url": {},
+                "color": {}
+            }
+        }
 
-    elif "priority" in list(dict_keys)[0].keys():
+    if len(dict_keys.intersection({"water", "wind", "temp", "unit", "url", "color"})) > 0:
+        return edit_general_settings(dict_input, svar_dict)
+
+    elif "priority" in dict_input[list(dict_keys)[0]].keys():
         import_type = "location"
 
     else:
-        return "embed -title 'You Have Been Sneak Attacked By an Error' "
+        return "embed -title 'You Have Been Sneak Attacked By an Error'"
+
+    
+
+
+
 
 
 
