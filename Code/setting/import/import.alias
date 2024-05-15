@@ -225,7 +225,7 @@ def validate_svar_dict(svar_dict: dict, error_list: list[str]):
                                 int(integer)
 
                                 if not typeof(condition) == "str":
-                                    _ = 5 / 0
+                                    assert False
 
 
                                 if not condition in svar_dict["Settings"]["water"].keys():
@@ -264,7 +264,7 @@ def validate_svar_dict(svar_dict: dict, error_list: list[str]):
                                 int(integer)
 
                                 if not typeof(condition) == "str":
-                                    _ = 5 / 0
+                                    assert false
 
 
                                 if not condition in svar_dict["Settings"]["wind"].keys():
