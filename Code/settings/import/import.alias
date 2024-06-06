@@ -279,31 +279,6 @@ def validate_svar_dict(svar_dict: dict, error_list: list[str]):
 
     return svar_dict, error_list
 
-                            
-
-                    
-
-                    
-
-
-            
-
-                            
-
-        
-
-
-
-
-
-
-
-
-# Cycle through the SVAR and validate it, removing any items that it has problems with 
-
-# (start at removing season -> location) for locations
-# (start at removing specific condition -> measurement)
-
 
 def edit_general_settings(dict_input: dict, svar_dict: dict):
 
@@ -355,6 +330,11 @@ def edit_location_settings(dict_input: dict, svar_dict: dict):
 
 def main(dict_input: dict):
 
+    prefix = ctx.prefix
+
+    footer = f"{prefix}weather settings import [JSON string] | 6/5/24 | ShadowsStride"
+
+
     dict_keys = set(list(dict_input.keys()))
 
     if not svar_dict := get_svar("weather_settings"):
@@ -376,9 +356,69 @@ def main(dict_input: dict):
         svar_dict, error_list = edit_location_settings(dict_input, svar_dict)
 
     else:
-        return "embed -title 'You Have Been Sneak Attacked By an Error'"
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'This contains an invalid or empty JSON string' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png' -color '#CF142B'", ""
 
     
-    # Finish writing error statement and then need to construct output for success
+    if len(error_list) == 0:
+
+        if "color" in svar_dict["Settings"].keys():
+
+            color_list = []
+
+            for season_color_list in svar_dict["Settings"]["color"].values():
+                color_list += season_color_list
+
+            if len(color_list) > 0:
+                color = randchoice(color_list)
+                color_found = True
+
+            else:
+                color_found = False
+        
+        else:
+            color_found = False
+
+        if not color_found:
+            color = randchoice(["#FF2E00", "#FF5D00", "#FF7F00", "#FF9C00", "#FFB700", "#0C6301", "#60AF02", "#F8E27F", "#FEC900", "#850D52", "#E70C23", "#F1C0D6", "#FAD808", "#E6EBF3", "#366290", "#04B4FC", "#61CFF8", "#165C96", "#56789F", "#8DB2CD"])
+
+        if "url" in svar_dict["Settings"].keys():
+
+            url_list = []
+
+            for season_url_list in svar_dict["Settings"]["url"].values():
+                url_list.append(season_url_list)
+
+            if len(url_list) > 0:
+                img_url = randchoice(url_list)
+                url_found = True
+
+            else:
+                url_found = False
+        
+        else:
+            url_found = False
+
+        if not url_found:
+            img_url = randchoice(
+                ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/fall.png",
+                "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/spring.png",
+                "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/summer.png",
+                "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-System/main/Data/images/winter.png"]
+            )
+
+        error_message = "None"
+
+    else:
+        color = "#CF142B"
+        error_message = "\n".join(error_list)
+        img_url = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png"
+
+    return f"{prefix}embed -title '{ctx.author.display_name} Attempts to Import Weather Settings' -f '**Errors:**\n{error_message}' -footer '{footer}' -color '{color}' -thumb '{img_url}'", f"{prefix}svar weather_settings '{svar_dict}'"
+
+
+embed_str, svar_str = main(%*%)
+
 
 </drac2>
+{{embed_str}}
+{{svar_str}}
