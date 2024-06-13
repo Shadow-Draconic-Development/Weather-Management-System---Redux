@@ -1,0 +1,78 @@
+multiline
+<drac2>
+
+def condition_validation(condition_dict: dict):
+    pass
+
+
+def base_validation(base_string: str):
+    pass
+
+
+def dice_validation(dice_string: str):
+    pass
+
+
+def main(input_dict: dict) -> tuple(str, str):
+
+    prefix = ctx.prefix
+
+    footer = f"{prefix}weather import location [JSON string] | 6/13/24 | ShadowsStride"
+
+    error_list = []
+
+    if not svar_dict := get_svar("weather_settings"):
+        svar_dict = {
+            "Settings": {
+                "water": {},
+                "wind": {},
+                "temp": {},
+                "unit": "imperial",
+                "url": {},
+                "color": {}
+            }
+        }
+
+    for location, location_details in input_dict.items():
+
+        if not location in svar_dict.keys():
+            svar_dict[location] = {
+                "priority": 999
+            }
+
+        for location_season, season_details in location_details.items():
+            if location_season != "priority":
+
+                svar_dict[location][location_season] = {}
+
+                for setting, setting_value in season_details.keys():
+
+
+                    match setting:
+
+                        case c if "dice" in c:
+                            # Check for dice validation
+
+                            svar_dict[location][location_season][setting] = setting_value
+
+
+                        case c if "base" in c:
+                            # Check for number validation
+
+                            svar_dict[location][location_season][setting] = setting_value
+
+                        case c if "conditions" in c:
+                            # Check for conditions validation
+
+                            svar_dict[location][location_season][setting] = setting_value
+
+            else:
+                svar_dict[location]["priority"] = location_details["priority"]
+
+
+
+
+
+
+
+</drac2>

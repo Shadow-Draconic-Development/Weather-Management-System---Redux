@@ -1,0 +1,110 @@
+embed
+<drac2>
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def edit_general_settings(svar_dict: dict, category: str, general_setting: str, switch: str, value: str|int):
+
+    if search_result := search_list(general_setting, svar_dict["Settings"][category].keys()):
+
+        if len(search_result) == 1:
+            general_setting = search_result[0]
+
+        else:
+            for match in search_result:
+                if general_setting.lower() != match.lower():
+                    found = False
+
+                else:
+                    general_setting = match
+
+                    found = True
+                    break
+
+            if not found:
+                return svar_dict, False, f"Multiple Matches Found:\n" + "\n".join(search_result)
+
+    else:
+        return svar_dict, False, f"Setting not found (`{general_setting}`)"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def main(input_list: list[str]) -> tuple(str, str, str, str, str):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</drac2>
