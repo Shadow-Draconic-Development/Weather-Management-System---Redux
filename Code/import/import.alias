@@ -11,10 +11,10 @@ f2 = f"\n**Settings Import:**\nCommand: `{prefix}weather import settings [JSON s
 f = f1 + f2
 
 thumb = randchoice(
-    ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/fall.png",
-    "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/spring.png",
-    "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/summer.png",
-    "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/winter.png"]
+    ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/fall.png",
+    "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
+    "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
+    "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
 )
 
 footer = f"{prefix}weather import | 6/15/24 | ShadowsStride"
