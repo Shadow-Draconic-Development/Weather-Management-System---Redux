@@ -1,3 +1,5 @@
+// Generated using ChatGPT, I don't have the JS experience to write this myself
+
 document.addEventListener('DOMContentLoaded', function() {
     const settingsForm = document.getElementById('settingsForm');
     const locationSettingsContainer = document.getElementById('locationSettingsContainer');
