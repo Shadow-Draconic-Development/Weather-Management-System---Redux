@@ -142,9 +142,6 @@ def main(input_dict: dict) -> tuple(str, str):
     # Error list
     error_list = []
 
-
-
-
     # If SVAR does not exist, create default dictionary
     if not svar_dict := get_svar("weather_settings"):
         svar_dict = {
