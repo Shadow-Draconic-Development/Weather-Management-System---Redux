@@ -51,7 +51,7 @@ def main(input_dict: dict) -> tuple(str, str):
     error_list = []
 
     # If SVAR does not exist, create default dictionary
-    if not svar_dict := get_svar("weather_settings"):
+    if not (svar_dict := get_svar("weather_settings")):
         svar_dict = {
             "Settings": {
                 "water": {},
@@ -83,7 +83,7 @@ def main(input_dict: dict) -> tuple(str, str):
                         
                         # For each min_rate, max_rate, condition
                         for option_setting, option_setting_value in option_dict.items():
-                            if "rate" in option_setting:
+                            if "Rate" in option_setting:
 
                                 if number_validator(option_setting_value):
                                     svar_dict["Settings"][setting][option][option_setting] = float(option_setting_value)
@@ -99,7 +99,7 @@ def main(input_dict: dict) -> tuple(str, str):
 
             case c if c == "unit":
 
-                if settings_dict in ["metric", "imperial"]:
+                if setting_dict in ["metric", "imperial"]:
                     svar_dict["Settings"][setting] = setting_dict
 
                 else:
@@ -113,14 +113,14 @@ def main(input_dict: dict) -> tuple(str, str):
 
                 for season, img_url in setting_dict.items():
 
-                    if img_url.lower().endswith([".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp"]) and img_url.lower().startswith("http"):
+                    if img_url.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")) and img_url.lower().startswith("http"):
                         svar_dict["Settings"]["url"][season] = img_url
 
                     else:
                         error_list.append(f"url -> {season} has an invalid image URL")
 
 
-            case c if c == "color"
+            case c if c == "color":
 
                 if not "color" in svar_dict["Settings"].keys():
                     svar_dict["Settings"]["color"] = dict()
@@ -145,10 +145,10 @@ def main(input_dict: dict) -> tuple(str, str):
         color = "#39FF14"
         f = "Setting(s) successfully imported"
         thumb = randchoice(
-            ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/fall.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/spring.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/summer.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/winter.png"]
+            ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/fall.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
         )
 
     # If errors
@@ -162,7 +162,7 @@ def main(input_dict: dict) -> tuple(str, str):
 
 
 # Main program function
-embed_str, svar_str = main(%*%)
+embed_str, svar_str = main(load_json(%*%))
 
 
 </drac2>
