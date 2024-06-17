@@ -175,9 +175,9 @@ def main(input_dict: dict) -> tuple(str, str):
             # If season is not priority
             if location_season != "priority":
 
-                # Clear out season details
-                svar_dict[location][location_season] = {}
-
+                # If season does not exist in location, create empty dictionary
+                if not location_season in svar_dict[location].keys():
+                    svar_dict[location][location_season] = {}
 
                 # For each setting, value within season
                 for setting, setting_value in season_details.items():
