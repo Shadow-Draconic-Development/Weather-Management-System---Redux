@@ -163,64 +163,87 @@ def main(input_dict: dict) -> tuple(str, str):
     # For each location, location details in input dictionary
     for location, location_details in input_dict.items():
 
+        location_name = location
+
+        mapping_dict = {location_normal.lower(): location_normal for location_normal in svar_dict.keys()}
+
         # If location is not in SVAR, create location with default priority
-        if not location in svar_dict.keys():
-            svar_dict[location] = {
+        if not location_name.lower() in mapping_dict.keys():
+            svar_dict[location_name] = {
                 "priority": 999
             }
 
-        # For each season, season settings in location
-        for location_season, season_details in location_details.items():
+        else:
+            if (location_name := mapping_dict[location_name.lower()]) == "settings":
+                error_list.append("Location name cannot be named 'settings'")
 
-            # If season is not priority
-            if location_season != "priority":
-
-                # If season does not exist in location, create empty dictionary
-                if not location_season in svar_dict[location].keys():
-                    svar_dict[location][location_season] = {}
-
-                # For each setting, value within season
-                for setting, setting_value in season_details.items():
-
-                    # Match setting
-                    match setting:
-
-                        # If dice setting
-                        case c if "dice" in c:
-                            
-                            # If valid dice, set setting to new value
-                            if dice_validation(setting_value):
-                                svar_dict[location][location_season][setting] = setting_value
-
-                            # If not valid dice, add to error list
-                            else:
-                                error_list.append(f"{location} -> {location_season} -> {setting} has invalid dice notation")
-
-                        # If base value setting
-                        case c if "base" in c:
-                            
-                            # If valud base, set setting to new value
-                            if setting_value := base_validation(setting_value):
-                                svar_dict[location][location_season][setting] = setting_value
-
-                            # If not valid value, add to error list
-                            else:
-                                error_list.append(f"{location} -> {location_season} -> {setting} is not a number")
-
-                        # If condition setting, cehck valid settings
-                        case c if "conditions" in c:
-                            check_result, error_list, setting_value = condition_validation(setting_value, error_list, location, location_season, setting)
-
-                            # If at least one condition is valid, set to new value
-                            if check_result in [0,1]:
-                                svar_dict[location][location_season][setting] = setting_value
-
-                            else:
-                                error_list.append(f"{location} -> {location_season} -> {setting} imported no conditions")                  
-
-            # If priority, set new priority
             else:
-                svar_dict[location]["priority"] = location_details["priority"]
+
+                # For each season, season settings in location
+                for location_season, season_details in location_details.items():
+
+                    # If season is not priority
+                    if location_season != "priority":
+
+                        # Redo searches for soft searching using search_list()
+
+                        location_season_name = location_season
+
+                        mapping_dict = {location_season_normal.lower(): location_season_normal for location_season_normal in svar_dict[location_name].keys()}
+
+                        if location_season_name.lower() not in mapping_dict.keys():
+                            svar_dict[location_name][location_season_name] = {}
+
+                        else:
+                            location_season_name = mapping_dict[location_season_name.lower()]
+
+                        # For each setting, value within season
+                        for setting, setting_value in season_details.items():
+
+                            # Match setting
+                            match setting:
+
+                                # If dice setting
+                                case c if "dice" in c:
+                                    
+                                    # If valid dice, set setting to new value
+                                    if dice_validation(setting_value):
+                                        svar_dict[location_name][location_season_name][setting] = setting_value
+
+                                    # If not valid dice, add to error list
+                                    else:
+                                        error_list.append(f"{location} -> {location_season_name} -> {setting} has invalid dice notation")
+
+                                # If base value setting
+                                case c if "base" in c:
+                                    
+                                    # If valud base, set setting to new value
+                                    if setting_value := base_validation(setting_value):
+                                        svar_dict[location_name][location_season_name][setting] = setting_value
+
+                                    # If not valid value, add to error list
+                                    else:
+                                        error_list.append(f"{location_name} -> {location_season_name} -> {setting} is not a number")
+
+                                # If condition setting, cehck valid settings
+                                case c if "conditions" in c:
+                                    check_result, error_list, setting_value = condition_validation(setting_value, error_list, location, location_season, setting)
+
+                                    # If at least one condition is valid, set to new value
+                                    if check_result in [0,1]:
+                                        svar_dict[location_name][location_season_name][setting] = setting_value
+
+                                    else:
+                                        error_list.append(f"{location_name} -> {location_season_name} -> {setting} imported no conditions")                  
+
+                    # If priority, set new priority
+                    else:
+
+                        if typeof(svar_dict[location_name]["priority"]) in ["str", "int", "float"]:
+                            svar_dict[location_name]["priority"] = location_details["priority"]
+
+                        else:
+                            error_list.append(f"{location_name} -> priotity: priority cannot be the name of a season")
 
     # If no errors
     if len(error_list) == 0:
