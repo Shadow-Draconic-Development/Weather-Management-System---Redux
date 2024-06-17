@@ -29,8 +29,8 @@ def main(input_list: list[str]) -> tuple(str, str):
     prefix = ctx.prefix
     footer = f"{prefix}weather add location [location name] | 6/17/24 | ShadowsStride"
 
-    # Error list
-    error_list = []
+    if len(input_list) == 0:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked by an Error' -f 'Expected location name' -footer '{footer}' -color '#CF142B' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
     # If SVAR does not exist, create default dictionary
     if not (svar_dict := get_svar("weather_settings")):
