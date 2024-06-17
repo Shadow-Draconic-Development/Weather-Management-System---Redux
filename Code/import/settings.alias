@@ -1,6 +1,7 @@
 multiline
 <drac2>
 
+
 def number_validator(input_value: str) -> bool:
     
     try:
@@ -45,7 +46,7 @@ def main(input_dict: dict) -> tuple(str, str):
 
     # Setup for embed
     prefix = ctx.prefix
-    footer = f"{prefix}weather import settings [JSON string] | 6/15/24 | ShadowsStride"
+    footer = f"{prefix}weather import settings [JSON string] | 6/17/24 | ShadowsStride"
 
     # Error list
     error_list = []
@@ -70,14 +71,22 @@ def main(input_dict: dict) -> tuple(str, str):
 
     for setting, setting_dict in input_dict.items():
 
-
         match setting:
 
             case c if c in ["water", "wind", "temp"]:
 
                 for option, option_dict in setting_dict.items():
 
-                    svar_dict["Settings"][setting][option] = dict()
+                    option_name = option
+
+                    mapping_dict = {option_normal.lower(): option_normal for option_normal in svar_dict["Settings"][setting].keys()}
+
+
+                    if option_name.lower() not in mapping_dict.keys():
+                        svar_dict["Settings"][setting][option_name] = dict()
+
+                    else:
+                        option_name = mapping_dict[option_name.lower()]
 
                     if option_dict != dict():
                         
@@ -86,20 +95,20 @@ def main(input_dict: dict) -> tuple(str, str):
                             if "Rate" in option_setting:
 
                                 if number_validator(option_setting_value):
-                                    svar_dict["Settings"][setting][option][option_setting] = float(option_setting_value)
+                                    svar_dict["Settings"][setting][option_name][option_setting] = float(option_setting_value)
 
                                 else:
-                                    error_list.append(f"{setting} -> {option} -> {option_setting} is not a number")
+                                    error_list.append(f"{setting} -> {option_name} -> {option_setting} is not a number")
 
                             elif option_setting == "condition":
-                                svar_dict["Settings"][setting][option][option_setting] = option_setting_value
+                                svar_dict["Settings"][setting][option_name][option_setting] = option_setting_value
 
                             else:
                                 pass
 
             case c if c == "unit":
 
-                if setting_dict in ["metric", "imperial"]:
+                if setting_dict.lower() in ["metric", "imperial"]:
                     svar_dict["Settings"][setting] = setting_dict
 
                 else:
@@ -113,11 +122,21 @@ def main(input_dict: dict) -> tuple(str, str):
 
                 for season, img_url in setting_dict.items():
 
-                    if img_url.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")) and img_url.lower().startswith("http"):
-                        svar_dict["Settings"]["url"][season] = img_url
+                    season = season_name
+
+                    mapping_dict = {season_normal.lower(): season_normal for season_normal in svar_dict["Settings"]["url"].keys()}
+
+                    if season_name.lower() not in mapping_dict.keys():
+                        svar_dict["Settings"]["url"][season_name] = ""
 
                     else:
-                        error_list.append(f"url -> {season} has an invalid image URL")
+                        season_name = mapping_dict[season_name.lower()]
+
+                    if img_url.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")) and img_url.lower().startswith("http"):
+                        svar_dict["Settings"]["url"][season_name] = img_url
+
+                    else:
+                        error_list.append(f"url -> {season_name} has an invalid image URL")
 
 
             case c if c == "color":
@@ -127,6 +146,16 @@ def main(input_dict: dict) -> tuple(str, str):
 
                 for season, color_list in setting_dict.items():
 
+                    season = season_name
+
+                    mapping_dict = {season_normal.lower(): season_normal for season_normal in svar_dict["Settings"]["url"].keys()}
+
+                    if season_name.lower() not in mapping_dict.keys():
+                        svar_dict["Settings"]["color"][season_name] = []
+
+                    else:
+                        season_name = mapping_dict[season_name.lower()]
+
                     new_color_list = []
 
                     for color in color_list:
@@ -134,10 +163,10 @@ def main(input_dict: dict) -> tuple(str, str):
                             new_color_list.append(new_color)
 
                         else:
-                            error_list.append(f"color -> {season} -> {color} is an invalid hex code")
+                            error_list.append(f"color -> {season_name} -> {color} is an invalid hex code")
 
                     if len(new_color_list) != 0:
-                        svar_dict["Settings"]["color"][season] = new_color_list
+                        svar_dict["Settings"]["color"][season_name] = new_color_list
 
 
     # If no errors
