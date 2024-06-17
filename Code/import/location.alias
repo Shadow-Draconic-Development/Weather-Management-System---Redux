@@ -70,12 +70,12 @@ def base_validation(base_string: str|int) -> int|bool:
         return False
 
 
-def dice_validation(input_string: str) -> bool:
+def dice_validation(dice_string: str) -> bool:
     """
     Validates dice notation
 
     Args:
-        input_string (str): Dice string
+        dice_string (str): Dice string
 
     Return:
         bool: If correct notation
@@ -137,13 +137,16 @@ def main(input_dict: dict) -> tuple(str, str):
 
     # Setup for embed
     prefix = ctx.prefix
-    footer = f"{prefix}weather import location [JSON string] | 6/15/24 | ShadowsStride"
+    footer = f"{prefix}weather import location [JSON string] | 6/13/24 | ShadowsStride"
 
     # Error list
     error_list = []
 
+
+
+
     # If SVAR does not exist, create default dictionary
-    if not (svar_dict := get_svar("weather_settings")):
+    if not svar_dict := get_svar("weather_settings"):
         svar_dict = {
             "Settings": {
                 "water": {},
@@ -178,9 +181,8 @@ def main(input_dict: dict) -> tuple(str, str):
                 # Clear out season details
                 svar_dict[location][location_season] = {}
 
-
                 # For each setting, value within season
-                for setting, setting_value in season_details.items():
+                for setting, setting_value in season_details.keys():
 
                     # Match setting
                     match setting:
@@ -227,10 +229,10 @@ def main(input_dict: dict) -> tuple(str, str):
         color = "#39FF14"
         f = "Location(s) successfully imported"
         thumb = randchoice(
-            ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/fall.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
+            ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/fall.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/spring.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/summer.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Avrae-Weather-Management-system---Redux/main/Data/images/winter.png"]
         )
 
     # If errors
@@ -244,7 +246,7 @@ def main(input_dict: dict) -> tuple(str, str):
 
 
 # Main program function
-embed_str, svar_str = main(load_json(%*%))
+embed_str, svar_str = main(%*%)
 
 
 </drac2>

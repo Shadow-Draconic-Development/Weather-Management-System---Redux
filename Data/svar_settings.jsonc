@@ -3,16 +3,16 @@
         "water": {
             "Clear": {},
             "Light Moisture": {
-                "minRate": 0.07,
-                "maxRate": 0.15
+                "min_rate": 0.07,
+                "max_rate": 0.15
             },
             "Moderate Moisture": {
-                "minRate": 0.15,
-                "maxRate": 0.23
+                "min_rate": 0.15,
+                "max_rate": 0.23
             },
             "Strong Moisture": {
-                "minRate": 0.59,
-                "maxRate": 1.5,
+                "min_rate": 0.59,
+                "max_rate": 1.5,
                 "condition": "See [Heavy Precipitation](https://www.dndbeyond.com/sources/dmg/adventure-environments#HeavyPrecipitation)"
             },
             "Heavy Fog": {
@@ -22,70 +22,70 @@
         "wind": {
             "None": {},
             "Light Air": {
-                "minRate": 1,
-                "maxRate": 4
+                "min_rate": 1,
+                "max_rate": 4
             },
             "Light Breeze": {
-                "minRate": 4,
-                "maxRate": 8
+                "min_rate": 4,
+                "max_rate": 8
             },
             "Gentle Breeze": {
-                "minRate": 8,
-                "maxRate": 13
+                "min_rate": 8,
+                "max_rate": 13
             },
             "Moderate Breeze": {
-                "minRate": 13,
-                "maxRate": 19
+                "min_rate": 13,
+                "max_rate": 19
             },
             "Fresh Breeze": {
-                "minRate": 19,
-                "maxRate": 25
+                "min_rate": 19,
+                "max_rate": 25
             },
             "Strong Breeze": {
-                "minRate": 25,
-                "maxRate": 32,
+                "min_rate": 25,
+                "max_rate": 32,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             },
             "High Wind": {
-                "minRate": 32,
-                "maxRate": 39,
+                "min_rate": 32,
+                "max_rate": 39,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             },
             "Gale": {
-                "minRate": 39,
-                "maxRate": 47,
+                "min_rate": 39,
+                "max_rate": 47,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             },
             "Strong Gale": {
-                "minRate": 47,
-                "maxRate": 55,
+                "min_rate": 47,
+                "max_rate": 55,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             },
             "Storm Gale": {
-                "minRate": 55,
-                "maxRate": 64,
+                "min_rate": 55,
+                "max_rate": 64,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             },
             "Violent Storm": {
-                "minRate": 64,
-                "maxRate": 73,
+                "min_rate": 64,
+                "max_rate": 73,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             },
             "Hurricane Force": {
-                "minRate": 73,
-                "maxRate": 100,
+                "min_rate": 73,
+                "max_rate": 100,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             }
         },
         "temp": {
             "Extreme Cold": {
-                "minRate": -999,
-                "maxRate": 0,
+                "min_rate": -999,
+                "max_rate": 0,
                 "condition": "See [Extreme Cold](https://www.dndbeyond.com/sources/dmg/adventure-environments#ExtremeCold)"
             },
             "Extreme Heat": {
-                "minRate": 100,
-                "maxRate": 999,
+                "min_rate": 100,
+                "max_rate": 999,
                 "condition": "See [Extreme Heat](https://www.dndbeyond.com/sources/dmg/adventure-environments#ExtremeHeat)"
             }
         },
@@ -105,7 +105,7 @@
     },
     "Haell": {
         "priority": 999,
-        "Fall": {
+        "Season": {
             "temp_dice": "2d10",
             "temp_base": 32,
             "water_dice": "1d20",
@@ -125,7 +125,7 @@
                 "100": "High Wind"
             }
         },
-        "Spring": {
+        "Season2": {
             "temp_dice": "2d10",
             "temp_base": 32,
             "water_dice": "1d20",

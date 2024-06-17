@@ -1,5 +1,3 @@
-// generalScripts.js
-
 document.addEventListener("DOMContentLoaded", function() {
     // Create dark mode toggle button
     const toggleButton = document.createElement("button");
@@ -20,10 +18,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Add click event listener to toggle button
     toggleButton.addEventListener("click", toggleDarkMode);
-
-    // Disable autocomplete for all input fields
-    const inputFields = document.querySelectorAll("input");
-    inputFields.forEach(input => {
-        input.setAttribute("autocomplete", "off");
-    });
 });
