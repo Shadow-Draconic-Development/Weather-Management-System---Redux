@@ -1,131 +1,107 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Weather General Settings Generator</title>
-        <link
-            rel="stylesheet"
-            type="text/css"
-            href="/Data/website/styles.css"
-        />
 
-        <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/Shadow-Draconic-Development/.github/main/assets/icon.ico">
-        <!-- CSS file reference -->
-    </head>
-    <body>
-        <!-- Header Container -->
-        <div class="header-container">
-            <h1>Weather General Settings Generator</h1>
-            <img
-                src="/Data/images/main.png"
-                alt="Logo"
-                width="10%"
-                style="min-width: 70px"
-            />
-        </div>
+<head>
+    <title>Weather General Settings Generator</title>
+    <link rel="stylesheet" type="text/css" href="Data/website/styles.css" />
 
-        <nav>
-            <a href="https://shadow-draconic-development.github.io/.github/" target="_blank">Shadow Draconic Development Main Page</a>
-            <a href="/city.html">Weather Location Settings Generator</a>
-            <a href="https://github.com/Shadow-Draconic-Development/Weather-Management-System---Redux" target="_blank">GitHub</a>
-        </nav>
+    <link rel="icon" type="image/x-icon"
+        href="https://raw.githubusercontent.com/Shadow-Draconic-Development/.github/main/assets/icon.ico">
+    <!-- CSS file reference -->
+</head>
 
-        <form id="settingsForm">
-            <fieldset>
-                <legend>Water Settings</legend>
-                <!-- Button to add new water setting -->
-                <button type="button" id="addWaterSetting">
-                    Add Water Setting
-                </button>
+<body>
+    <!-- Header Container -->
+    <div class="header-container">
+        <h1>Weather General Settings Generator</h1>
+        <img src="Data/images/main.png" alt="Logo" width="10%" style="min-width: 70px" />
+    </div>
 
-                <!-- Container to hold the water settings -->
-                <div id="waterSettingsContainer"></div>
-            </fieldset>
+    <nav>
+        <a href="https://shadow-draconic-development.github.io/.github/" target="_blank">Shadow Draconic Development
+            Main Page</a>
+        <a href="city.html">Weather Location Settings Generator</a>
+        <a href="https://github.com/Shadow-Draconic-Development/Weather-Management-System---Redux"
+            target="_blank">GitHub</a>
+    </nav>
 
-            <fieldset>
-                <legend>Wind Settings</legend>
-                <!-- Button to add new wind setting -->
-                <button type="button" id="addWindSetting">
-                    Add Wind Setting
-                </button>
+    <form id="settingsForm">
+        <fieldset>
+            <legend>Water Settings</legend>
+            <!-- Button to add new water setting -->
+            <button type="button" id="addWaterSetting">
+                Add Water Setting
+            </button>
 
-                <!-- Container to hold the wind settings -->
-                <div id="windSettingsContainer"></div>
-            </fieldset>
+            <!-- Container to hold the water settings -->
+            <div id="waterSettingsContainer"></div>
+        </fieldset>
 
-            <fieldset>
-                <legend>Temperature Settings</legend>
-                <!-- Button to add new temperature setting -->
-                <button type="button" id="addTemperatureSetting">
-                    Add Temperature Setting
-                </button>
+        <fieldset>
+            <legend>Wind Settings</legend>
+            <!-- Button to add new wind setting -->
+            <button type="button" id="addWindSetting">
+                Add Wind Setting
+            </button>
 
-                <!-- Container to hold the wind settings -->
-                <div id="temperatureSettingsContainer"></div>
-            </fieldset>
+            <!-- Container to hold the wind settings -->
+            <div id="windSettingsContainer"></div>
+        </fieldset>
 
-            <fieldset>
-                <legend>Image URLs</legend>
-                <!-- Button to add a new season and URL input -->
-                <button type="button" id="addSeasonUrl">
-                    Add Season and URL
-                </button>
+        <fieldset>
+            <legend>Temperature Settings</legend>
+            <!-- Button to add new temperature setting -->
+            <button type="button" id="addTemperatureSetting">
+                Add Temperature Setting
+            </button>
 
-                <!-- Container to hold season and URL inputs -->
-                <div id="seasonUrlContainer"></div>
-            </fieldset>
+            <!-- Container to hold the wind settings -->
+            <div id="temperatureSettingsContainer"></div>
+        </fieldset>
 
-            <fieldset>
-                <legend>Colors</legend>
-                <!-- Button to add a new season and color input -->
-                <button type="button" id="addColor">
-                    Add Season and Colors
-                </button>
+        <fieldset>
+            <legend>Image URLs</legend>
+            <!-- Button to add a new season and URL input -->
+            <button type="button" id="addSeasonUrl">
+                Add Season and URL
+            </button>
 
-                <!-- Container to hold the season and color inputs -->
-                <div id="colorContainer"></div>
-            </fieldset>
+            <!-- Container to hold season and URL inputs -->
+            <div id="seasonUrlContainer"></div>
+        </fieldset>
 
-            <label for="unit">Unit</label>
-            <select id="unit" name="unit">
-                <option value="imperial">Imperial</option>
-                <option value="metric">Metric</option>
-            </select>
-            <button type="submit">Generate JSON</button>
-        </form>
+        <fieldset>
+            <legend>Colors</legend>
+            <!-- Button to add a new season and color input -->
+            <button type="button" id="addColor">
+                Add Season and Colors
+            </button>
 
-        <div id="output">
-            <h2>Generated JSON:</h2>
-            <pre id="jsonOutput"></pre>
-        </div>
+            <!-- Container to hold the season and color inputs -->
+            <div id="colorContainer"></div>
+        </fieldset>
 
-        <!-- JavaScript file references -->
-        <script
-            type="module"
-            src="/Data/website/scripts/weatherGen/windScript.js"
-        ></script>
-        <script
-            type="module"
-            src="/Data/website/scripts/weatherGen/waterScript.js"
-        ></script>
-        <script
-            type="module"
-            src="/Data/website/scripts/weatherGen/tempScript.js"
-        ></script>
-        <script
-            type="module"
-            src="/Data/website/scripts/weatherGen/seasonUrlScript.js"
-        ></script>
-        <script
-            type="module"
-            src="/Data/website/scripts/weatherGen/colorScript.js"
-        ></script>
-        <script
-            type="module"
-            src="/Data/website/scripts/weatherGen/generateJson.js"
-        ></script>
-        <script
-            type="module"
-            src="/Data/website/scripts/generalScripts.js"
-        ></script>
-    </body>
+        <label for="unit">Unit</label>
+        <select id="unit" name="unit">
+            <option value="imperial">Imperial</option>
+            <option value="metric">Metric</option>
+        </select>
+        <button type="submit">Generate JSON</button>
+    </form>
+
+    <div id="output">
+        <h2>Generated JSON:</h2>
+        <pre id="jsonOutput"></pre>
+    </div>
+
+    <!-- JavaScript file references -->
+    <script type="module" src="Data/website/scripts/weatherGen/windScript.js"></script>
+    <script type="module" src="Data/website/scripts/weatherGen/waterScript.js"></script>
+    <script type="module" src="Data/website/scripts/weatherGen/tempScript.js"></script>
+    <script type="module" src="Data/website/scripts/weatherGen/seasonUrlScript.js"></script>
+    <script type="module" src="Data/website/scripts/weatherGen/colorScript.js"></script>
+    <script type="module" src="Data/website/scripts/weatherGen/generateJson.js"></script>
+    <script type="module" src="Data/website/scripts/generalScripts.js"></script>
+</body>
+
 </html>

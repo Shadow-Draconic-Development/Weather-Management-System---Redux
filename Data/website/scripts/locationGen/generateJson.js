@@ -1,23 +1,22 @@
+// Generated using ChatGPT, I don't have the JS experience to write this myself
+
 document.addEventListener('DOMContentLoaded', function() {
     const settingsForm = document.getElementById('settingsForm');
     const locationSettingsContainer = document.getElementById('locationSettingsContainer');
     const jsonOutput = document.getElementById('jsonOutput');
     let usedLocationIndices = [];
 
-    // Add a new location setting
     document.getElementById('addWaterSetting').addEventListener('click', function() {
-        // Find the next available index
         const locationIndex = findNextAvailableIndex();
         const locationDiv = createLocationDiv(locationIndex);
         locationSettingsContainer.appendChild(locationDiv);
     });
 
-    // Function to create a new location div
     function createLocationDiv(locationIndex) {
         const locationDiv = document.createElement('div');
         locationDiv.className = 'location-setting';
-        locationDiv.dataset.locationIndex = locationIndex; // Store index in data attribute
-        
+        locationDiv.dataset.locationIndex = locationIndex;
+
         locationDiv.innerHTML = `
             <h3>Location</h3>
             <label for="locationName">Location Name:</label>
@@ -29,24 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="season-container"></div>
         `;
 
-        // Event listener for adding a season
         locationDiv.querySelector('.addSeasonBtn').addEventListener('click', function() {
             const seasonContainer = locationDiv.querySelector('.season-container');
             addSeasonDiv(seasonContainer);
         });
 
-        // Event listener for removing the location
         locationDiv.querySelector('.removeLocationBtn').addEventListener('click', function() {
             removeLocation(locationDiv);
         });
 
-        // Add the used index to the array of used indices
         usedLocationIndices.push(locationIndex);
 
         return locationDiv;
     }
 
-    // Function to find the next available index
     function findNextAvailableIndex() {
         for (let i = 1; i <= usedLocationIndices.length + 1; i++) {
             if (!usedLocationIndices.includes(i)) {
@@ -55,40 +50,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to remove a location and shift data from subsequent locations
     function removeLocation(locationDiv) {
         const locationIndex = parseInt(locationDiv.dataset.locationIndex);
         const indexToRemove = Array.from(locationSettingsContainer.children).indexOf(locationDiv);
         const totalLocations = locationSettingsContainer.children.length;
 
-        // Shift data from subsequent locations to the removed location
         for (let i = indexToRemove + 1; i < totalLocations; i++) {
             const currentLocation = locationSettingsContainer.children[i];
             const previousLocation = locationSettingsContainer.children[i - 1];
-            
-            // Shift data from current to previous
+
             const currentLocationNameInput = currentLocation.querySelector('[name="locationName"]');
             const currentPriorityInput = currentLocation.querySelector('[name="priority"]');
             const currentSeasonContainer = currentLocation.querySelector('.season-container');
-            
+
             const previousLocationNameInput = previousLocation.querySelector('[name="locationName"]');
             const previousPriorityInput = previousLocation.querySelector('[name="priority"]');
             const previousSeasonContainer = previousLocation.querySelector('.season-container');
-            
-            // Copy data from current location to previous location
+
             previousLocationNameInput.value = currentLocationNameInput.value;
             previousPriorityInput.value = currentPriorityInput.value;
             previousSeasonContainer.innerHTML = currentSeasonContainer.innerHTML;
         }
 
-        // Clear the data in the last location (do not remove it)
         const lastLocation = locationSettingsContainer.children[totalLocations - 1];
         clearLocationData(lastLocation);
 
-        // Remove the location div from the container
         locationSettingsContainer.removeChild(locationDiv);
 
-        // Remove the used index from the array of used indices
         const index = usedLocationIndices.indexOf(locationIndex);
         if (index !== -1) {
             usedLocationIndices.splice(index, 1);
@@ -96,22 +84,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function clearLocationData(location) {
-        // Clear the inputs and inner HTML of the season container
         const locationNameInput = location.querySelector('[name="locationName"]');
         const priorityInput = location.querySelector('[name="priority"]');
         const seasonContainer = location.querySelector('.season-container');
-    
-        // Reset the value of the location name input to an empty string
+
         locationNameInput.value = '';
-    
-        // Reset the value of the priority input to an empty string
         priorityInput.value = '';
-    
-        // Clear the inner HTML of the season container to remove all seasons
         seasonContainer.innerHTML = '';
     }
 
-    // Add a new season div within a location
     function addSeasonDiv(seasonContainer) {
         const seasonDiv = document.createElement('div');
         seasonDiv.className = 'season-setting';
@@ -136,19 +117,16 @@ document.addEventListener('DOMContentLoaded', function() {
             <button type="button" class="removeSeasonBtn">Remove Season</button>
         `;
 
-        // Event listener for adding a water condition
         seasonDiv.querySelector('.addWaterConditionBtn').addEventListener('click', function() {
             const waterConditionContainer = seasonDiv.querySelector('.water-condition-container');
             addWaterConditionDiv(waterConditionContainer);
         });
 
-        // Event listener for adding a wind condition
         seasonDiv.querySelector('.addWindConditionBtn').addEventListener('click', function() {
             const windConditionContainer = seasonDiv.querySelector('.wind-condition-container');
             addWindConditionDiv(windConditionContainer);
         });
 
-        // Event listener for removing the season
         seasonDiv.querySelector('.removeSeasonBtn').addEventListener('click', function() {
             seasonContainer.removeChild(seasonDiv);
         });
@@ -156,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
         seasonContainer.appendChild(seasonDiv);
     }
 
-    // Add a new water condition div within a season
     function addWaterConditionDiv(waterConditionContainer) {
         const waterConditionDiv = document.createElement('div');
         waterConditionDiv.className = 'water-condition-setting';
@@ -168,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <button type="button" class="removeWaterConditionBtn">Remove Water Condition</button>
         `;
 
-        // Event listener for removing the water condition
         waterConditionDiv.querySelector('.removeWaterConditionBtn').addEventListener('click', function() {
             waterConditionContainer.removeChild(waterConditionDiv);
         });
@@ -176,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
         waterConditionContainer.appendChild(waterConditionDiv);
     }
 
-    // Add a new wind condition div within a season
     function addWindConditionDiv(windConditionContainer) {
         const windConditionDiv = document.createElement('div');
         windConditionDiv.className = 'wind-condition-setting';
@@ -188,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <button type="button" class="removeWindConditionBtn">Remove Wind Condition</button>
         `;
 
-        // Event listener for removing the wind condition
         windConditionDiv.querySelector('.removeWindConditionBtn').addEventListener('click', function() {
             windConditionContainer.removeChild(windConditionDiv);
         });
@@ -196,32 +170,27 @@ document.addEventListener('DOMContentLoaded', function() {
         windConditionContainer.appendChild(windConditionDiv);
     }
 
-    // Function to generate JSON based on user input
     function generateJson() {
         const locations = {};
 
-        // Iterate through each location div
-        Array.from(locationSettingsContainer.children).forEach((locationDiv, locationIndex) => {
-            const locationName = locationDiv.querySelector('[name="locationName"]').value || `Location${locationIndex + 1}`;
+        Array.from(locationSettingsContainer.children).forEach((locationDiv) => {
+            const locationName = locationDiv.querySelector('[name="locationName"]').value || `Location`;
             const priority = locationDiv.querySelector('[name="priority"]').value || 999;
             const seasons = {};
 
-            // Iterate through each season div within the current location
-            Array.from(locationDiv.querySelectorAll('.season-setting')).forEach((seasonDiv, seasonIndex) => {
-                const seasonName = seasonDiv.querySelector('[name="seasonName"]').value || `Season${seasonIndex + 1}`;
-                const tempDice = seasonDiv.querySelector('[name="tempDice"]').value || "";
+            Array.from(locationDiv.querySelectorAll('.season-setting')).forEach((seasonDiv) => {
+                const seasonName = seasonDiv.querySelector('[name="seasonName"]').value || `Season`;
+                const tempDice = seasonDiv.querySelector('[name="tempDice"]').value || "2d10";
                 const tempBase = seasonDiv.querySelector('[name="tempBase"]').value || 32;
                 const waterDice = seasonDiv.querySelector('[name="waterDice"]').value || "1d20";
                 const windDice = seasonDiv.querySelector('[name="windDice"]').value || "1d100";
 
-                // Retrieve the conditions from the season div
                 const waterConditions = retrieveConditions(seasonDiv, 'water');
                 const windConditions = retrieveConditions(seasonDiv, 'wind');
 
-                // Add the season data to the seasons dictionary
                 seasons[seasonName] = {
                     temp_dice: tempDice,
-                    temp_base: tempBase,
+                    temp_base: Number(tempBase),
                     water_dice: waterDice,
                     water_conditions: waterConditions,
                     wind_dice: windDice,
@@ -229,23 +198,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
             });
 
-            // Add the location data to the locations dictionary
             locations[locationName] = {
                 priority: Number(priority),
-                Seasons: seasons
+                ...seasons
             };
         });
 
-        // Convert locations dictionary to JSON
         const jsonData = JSON.stringify(locations, null, 2);
-
-        // Display the formatted JSON in the output element
         jsonOutput.textContent = jsonData;
 
-        // Copy unformatted JSON string to the clipboard
         navigator.clipboard.writeText(JSON.stringify(locations))
             .then(() => {
-                // Notify the user via a popup that the JSON was copied to the clipboard
                 alert('JSON copied to clipboard!');
             })
             .catch((err) => {
@@ -253,16 +216,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Function to retrieve conditions from a season div
     function retrieveConditions(seasonDiv, type) {
         const conditionContainer = seasonDiv.querySelector(`.${type}-condition-container`);
         const conditions = {};
 
-        Array.from(conditionContainer.children).forEach((conditionDiv, index) => {
+        Array.from(conditionContainer.children).forEach((conditionDiv) => {
             const threshold = conditionDiv.querySelector(`[name="${type}Threshold"]`).value;
             const condition = conditionDiv.querySelector(`[name="${type}Condition"]`).value;
 
-            // Add each condition to the conditions dictionary
             if (threshold && condition) {
                 conditions[threshold] = condition;
             }
@@ -271,7 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return conditions;
     }
 
-    // Event listener for form submission
     settingsForm.addEventListener('submit', function(event) {
         event.preventDefault();
         generateJson();

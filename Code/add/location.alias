@@ -1,0 +1,76 @@
+multiline
+<drac2>
+
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def main(input_list: list[str]) -> tuple(str, str):
+
+    # Setup for embed
+    prefix = ctx.prefix
+    footer = f"{prefix}weather add location [location name] | 6/17/24 | ShadowsStride"
+
+    # Error list
+    error_list = []
+
+    # If SVAR does not exist, create default dictionary
+    if not (svar_dict := get_svar("weather_settings")):
+        svar_dict = {
+            "Settings": {
+                "water": {},
+                "wind": {},
+                "temp": {},
+                "unit": "imperial",
+                "url": {},
+                "color": {}
+            }
+        }
+
+    else:
+        svar_dict = load_json(svar_dict)
+
+    if search_result := (search_list(input_list[0], svar_dict.keys())):
+
+        for match in search_result:
+            if input_list[0].lower() == match.lower():
+                return f"{prefix}embed -title 'You Have Been Sneak Attacked by an Error' -f 'That location already exists' -footer '{footer}' -color '#CF142B' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+                # Return error
+
+    svar_dict[input_list[0]] = {}
+
+    thumb = randchoice(
+        ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/fall.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
+    )
+
+    return f"{prefix}embed -title '{ctx.author.display_name} Adds a New Location' -f 'Location added successfully' -footer '{footer}' -color '#39FF14' -thumb '{thumb}'", f"{prefix}svar weather_settings {dump_json(svar_dict)}"
+
+
+# Main program function
+embed_str, svar_str = main(&ARGS&)
+
+
+</drac2>
+{{embed_str}}
+{{svar_str}}
