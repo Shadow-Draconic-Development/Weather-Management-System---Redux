@@ -75,7 +75,7 @@ def main(input_list: list[str]):
     return f"{prefix}embed -title 'You Have Successfully Removed {input_list[0]}' -color '#39FF14' -footer '{footer}' -thumb '{thumb}'", f"{prefix}svar weather_settings {dump_json(svar_dict)}"
 
 
-embed_str, svar_str = main(load_json(&ARGS&))
+embed_str, svar_str = main(&ARGS&)
 
 
 </drac2>
