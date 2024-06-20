@@ -2,7 +2,7 @@ embed
 <drac2>
 
 
-def convert_measurement(units: str, amount: float) -> float|str:
+def convert_measurement(units: str, amount: float) -> float:
     """
     Converts measurements from one system to another
 
@@ -11,7 +11,7 @@ def convert_measurement(units: str, amount: float) -> float|str:
         amount (float): Number being converted
 
     Return:
-        float|str: Converted amount, string if error.
+        float: Converted amount
     """
 
     # Lowers units to lowercase
@@ -46,9 +46,6 @@ def convert_measurement(units: str, amount: float) -> float|str:
         case c if c == "km/h":
             return round(amount / 1.60935, 2)
 
-        # Invalid input
-        case _:
-            return "Invalid input."
 
 
 

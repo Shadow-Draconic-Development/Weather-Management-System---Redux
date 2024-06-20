@@ -1,0 +1,40 @@
+multiline
+<drac2>
+
+
+def main(input_list: list[str]):
+
+
+    prefix = ctx.prefix
+    footer = f"{prefix}weather remove condition [wind/water/temp] [condition name]"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</drac2>

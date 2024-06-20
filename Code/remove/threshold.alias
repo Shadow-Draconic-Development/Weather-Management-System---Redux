@@ -6,7 +6,7 @@ def main(input_list: list[str]):
 
 
     prefix = ctx.prefix
-    footer = f"{prefix}weather remove condition [location name] [season name]"
+    footer = f"{prefix}weather remove threshold [location name] [season name] [wind/water] [threshold #]"
 
 
 
