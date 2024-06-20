@@ -2,39 +2,105 @@ multiline
 <drac2>
 
 
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
 def main(input_list: list[str]):
 
 
     prefix = ctx.prefix
-    footer = f"{prefix}weather remove condition [wind/water/temp] [condition name]"
+    footer = f"{prefix}weather remove condition [wind/water/temp] [condition name] | 6/19/24 | ShadowsStride"
+
+    if (svar_dict := get_svar("weather_settings")):
+        svar_dict = load_json(svar_dict) 
+
+    else:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Weather settings does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+    if len(input_list) < 2:
+
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Expected condition type and condition name' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
 
 
+    if (search_result := search_list(input_list[0], ["wind", "water", "temp"])):
+        if len(search_result) == 1:
+            input_list[0] = search_result[0]
+
+        else:
+
+            found = False
+            for match in search_result:
+                if match.lower() != input_list[0].lower():
+                    pass
+
+                else:
+                    input_list[0] = match
+                    found = True
+                    break
+            
+            if not found:
+
+                output = "**Multiple Condition Types Found:**\n" + "\n".join(search_result)
+
+                return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+    if (search_result := search_list(input_list[0], svar_dict["Settings"][input_list[0]].keys())):
+        if len(search_result) == 1:
+            input_list[1] = search_result[0]
+
+        else:
+
+            found = False
+            for match in search_result:
+                if match.lower() != input_list[1].lower():
+                    pass
+
+                else:
+                    input_list[1] = match
+                    found = True
+                    break
+            
+            if not found:
+
+                output = "**Multiple Conditions Found:**\n" + "\n".join(search_result)
+
+                return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+    
+    svar_dict["Settings"][input_list[0]].pop(input_list[1])
+
+    thumb = randchoice(
+        ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/fall.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
+    )
+
+    return f"{prefix}embed -title 'You Have Successfully Removed {input_list[1]}' -color '#39FF14' -footer '{footer}' -thumb '{thumb}'", f"{prefix}svar weather_settings {dump_json(svar_dict)}"
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+embed_str, svar_str = main(load_json(%ARGS%))
 
 
 </drac2>
+{{embed_str}}
+{{svar_str}}
