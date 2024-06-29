@@ -1,4 +1,4 @@
-multiline
+embed
 <drac2>
 
 def create_output(color_dict: dict, season_name: str = "", warning_str: str = "", footer: str = "") -> tuple(str, str, str, str):
