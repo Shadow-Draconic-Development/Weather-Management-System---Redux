@@ -38,6 +38,7 @@ def main(input_list: list[str]):
     prefix = ctx.prefix
     footer = f"{prefix}weather list image <season name> | 7/5/24 | ShadowsStride"
     error_str = ""
+    color = ""
 
     if not (svar_dict := get_svar("weather_settings")):
         return f"Seasonal Images", "There currently are none", "", footer
@@ -70,7 +71,6 @@ def main(input_list: list[str]):
         else:
             error_str = "Season not found"
 
-
     if season != "random":
 
         return "Season Images", f"**Season:** {season}\n**URL:** {svar_dict['Settings']['url'][season]}", color, svar_dict["Settings"]["url"][season], footer
@@ -80,6 +80,9 @@ def main(input_list: list[str]):
         season = randchoice(season_list)
 
         if error_str != "":
+
+            color = "#CF142B"
+
             f = f"{error_str}\n\n**Seasons:**\n" + "\n".join(season_list) + f"\n**Season Shown:** {season}\n**URL:**" + svar_dict["Settings"]["url"][season]
 
         else:
