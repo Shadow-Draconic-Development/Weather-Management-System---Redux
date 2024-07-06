@@ -1,0 +1,99 @@
+embed
+<drac2>
+
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def multiple_match_determine(search_result: list[str], input_value: str):
+
+    for match in search_result:
+        if match.lower() == input_value.lower():
+            return match
+
+    return False
+
+
+def main(input_list: list[str]):
+
+
+    prefix = ctx.prefix
+    footer = f"{prefix}weather list image <season name> | 7/5/24 | ShadowsStride"
+    error_str = ""
+
+    if not (svar_dict := get_svar("weather_settings")):
+        return f"Seasonal Images", "There currently are none", "", footer
+
+    else:
+        svar_dict = load_json(svar_dict)
+
+    if not "Settings" in svar_dict.keys():
+        return f"Seasonal Images", "There currently are none", "", footer
+
+    if svar_dict["Settings"]["url"] == dict():
+        return f"Seasonal Images", "There currently are none", "", footer
+
+    season = "random"
+
+    if len(input_list) > 0:
+
+        if (search_result := search_list(input_list[0], svar_dict["Settings"]["url"].keys())):
+
+            if len(search_result) == 1:
+                season = search_result[0]
+
+            else:
+                if (match := multiple_match_determine(search_result, input_list[0])):
+                    season = match
+
+                else:
+                    error_str = "**Multiple Matches Found:**\n" + "\n".join(search_result)
+
+        else:
+            error_str = "Season not found"
+
+
+    if season != "random":
+
+        return "Season Images", f"**Season:** {season}\n**URL:** {svar_dict['Settings']['url'][season]}", color, svar_dict["Settings"]["url"][season], footer
+
+    else:
+        season_list = list(svar_dict["Settings"]["url"].keys())
+        season = randchoice(season_list)
+
+        if error_str != "":
+            f = f"{error_str}\n\n**Seasons:**\n" + "\n".join(season_list) + f"\n**Season Shown:** {season}\n**URL:**" + svar_dict["Settings"]["url"][season]
+
+        else:
+            f = f"**Seasons:**\n" + "\n".join(season_list) + f"\n**Season Shown:** {season}\n**URL:**" + svar_dict["Settings"]["url"][season]
+
+        return "Season Images", f, color, svar_dict["Settings"]["url"][season], footer
+
+
+title, f, color, image, footer = main(&ARGS&)
+
+
+</drac2>
+-title "{{title}}"
+-f "{{f}}"
+-color "{{color}}"
+-image "{{image}}"
+-footer "{{footer}}"
