@@ -1,0 +1,35 @@
+embed
+<drac2>
+
+
+def main():
+
+
+    prefix = ctx.prefix
+    footer = f"{prefix}weather list location | 7/6/24 | ShadowsStride"
+    error_str = ""
+
+
+    if not (svar_dict := get_svar("weather_settings")):
+        return f"Weather Locations", "There currently are none", "", footer
+
+    else:
+        svar_dict = load_json(svar_dict)
+
+    if len(svar_dict.keys()) == 1:
+        return f"Weather Locations", "There currently are none", "", footer
+
+    location_names = list(svar_dict.keys())
+    location_names.remove("Settings")
+
+    return "Weather Locations", "\n".join(location_names), "", footer
+
+
+title, f, color, footer = main()
+
+
+</drac2>
+-title "{{title}}"
+-f "{{f}}"
+-color "{{color}}"
+-footer "{{footer}}"
