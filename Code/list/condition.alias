@@ -26,7 +26,7 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
 def main(input_list: list[str]):
 
     prefix = ctx.prefix
-    footer = f"{prefix}weather list condition [water/wind/temp] | 7/5/24 | ShadowsStride"
+    footer = f"{prefix}weather list condition [water/wind/temp] <condition name> | 7/5/24 | ShadowsStride"
     error_str = ""
 
     if (svar_dict := get_svar("weather_settings")):
@@ -62,11 +62,88 @@ def main(input_list: list[str]):
     else:
         color = ""
 
+    if error_str == "" and len(input_list) > 1:
 
-    if svar_dict["Settings"][input_list[0]] == dict():
-        return f"Current {input_list[0].capitalize()} Condition Settings", f"{error_str}None", color, footer
+        if (search_result := search_list(input_list[1], svar_dict["Settings"][input_list[0]].keys())):
+            if len(search_result) == 1:
+                input_list[1] = search_result[0]
 
-    return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict["Settings"][input_list[0]].keys())), color, footer
+            else:
+                found = False
+                for match in search_result:
+                    if match.lower() == input_list[1].lower():
+                        input_list[1] = match
+                        found = True
+                        break
+
+
+                if not found:
+
+                    color = "#CF142B"
+                    error_str = "**Multiple Conditions Found:**" + "\n".join(search_result) + "\n"
+
+                    return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict["Settings"][input_list[0]].keys())), color, footer
+
+        else:
+            color = "#CF142B"
+            error_str = "Condition not found\n" 
+
+
+            if svar_dict["Settings"][input_list[0]] == dict():
+                return f"Current {input_list[0].capitalize()} Condition Settings", f"{error_str}None", color, footer
+
+            return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict["Settings"][input_list[0]].keys())), color, footer                  
+
+        match input_list[0]:
+
+            case c if c == "temp":
+
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    degrees = "F°"
+                
+                else:
+                    degrees = "C°"
+
+
+                f = f"**Min. Threshold:** {svar_dict["Settings"]["temp"][input_list[1]]["minRate"]} {degrees}\n**Max. Threshold:** {svar_dict["Settings"]["temp"][input_list[1]]["maxRate"]} {degrees}"
+
+                if "condition" in svar_dict["Settings"]["temp"][input_list[1]].keys():
+                    f += f"\n**Condition:** {svar_dict["Settings"]["temp"][input_list[1]]["condition"]}"
+
+            case c if c == "wind":
+
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    unit = "mph"
+                
+                else:
+                    unit = "km/h"
+
+                f = f"**Min. Speed:** {svar_dict["Settings"]["wind"][input_list[1]]["minRate"]} {unit}\n**Max. Speed:** {svar_dict["Settings"]["wind"][input_list[1]]["maxRate"]} {unit}"
+
+                if "condition" in svar_dict["Settings"]["wind"][input_list[1]].keys():
+                    f += f"\n**Condition:** {svar_dict["Settings"]["wind"][input_list[1]]["condition"]}" 
+
+            case _:
+
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    unit = "in/hr"
+                
+                else:
+                    unit = "mm/hr"       
+
+                f = f"**Min. Rate:** {svar_dict["Settings"]["water"][input_list[1]]["minRate"]} {unit}\n**Max. Rate:** {svar_dict["Settings"]["water"][input_list[1]]["maxRate"]} {unit}"
+
+                if "condition" in svar_dict["Settings"]["water"][input_list[1]].keys():
+                    f += f"\n**Condition:** {svar_dict["Settings"]["water"][input_list[1]]["condition"]}"
+
+        return f"Current {input_list[0].capitalize()} Condition Settings", f, color, footer
+
+    else:
+        if svar_dict["Settings"][input_list[0]] == dict():
+            return f"Current {input_list[0].capitalize()} Condition Settings", f"{error_str}None", color, footer
+
+        return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict["Settings"][input_list[0]].keys())), color, footer
+
 
 title, f, color, footer = main(&ARGS&)
 
