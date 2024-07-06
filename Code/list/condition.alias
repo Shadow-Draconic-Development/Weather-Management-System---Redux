@@ -29,7 +29,7 @@ def main(input_list: list[str]):
     footer = f"{prefix}weather list condition [water/wind/temp] <condition name> | 7/5/24 | ShadowsStride"
     error_str = ""
 
-    if (svar_dict := get_svar("weather_settings")):
+    if not (svar_dict := get_svar("weather_settings")):
         return f"Current Condition Settings", "None", "", footer
 
     else:

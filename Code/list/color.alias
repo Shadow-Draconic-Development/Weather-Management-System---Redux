@@ -50,7 +50,7 @@ def main(input_list: list[str]):
     prefix = ctx.prefix
     footer = f"{prefix}weather list color [season name] | 6/29/24 | ShadowsStride"
 
-    if (svar_dict := get_svar("weather_settings")):
+    if not (svar_dict := get_svar("weather_settings")):
         return f"Current Color Settings", "None", "", footer
 
     else:
