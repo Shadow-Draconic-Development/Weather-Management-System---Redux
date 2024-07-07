@@ -2,6 +2,36 @@ embed
 <drac2>
 
 
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def multiple_match_determine(search_result: list[str], input_value: str):
+
+    for match in search_result:
+        if match.lower() == input_value.lower():
+            return match
+
+    return False
+
+
 def convert_measurement(units: str, amount: float) -> float:
     """
     Converts measurements from one system to another
@@ -47,20 +77,315 @@ def convert_measurement(units: str, amount: float) -> float:
             return round(amount / 1.60935, 2)
 
 
+def threshold_finder(threshold_dict: dict, value: int|float) -> str:
+
+    threshold_list = list(threshold_dict.keys())
+    threshold_list.sort()
+
+    threshold = ""
+    value = str(value)
+
+    for thresh in threshold_list:
+        if value >= thresh:
+            threshold = thresh
+
+        else:
+            return threshold
+
+    return threshold_list[0]
 
 
+def random_float(start, end, precision=5):
+
+    factor = 10 ** precision
+
+    random_integer = randint(int(start * factor), int(end * factor))
+
+    return random_integer / factor
 
 
+def main(input_list: list[str]):
+
+    prefix = ctx.prefix
+    footer = f"{prefix}weather [season name] <#> | 7/6/24 | ShadowsStride" 
 
 
+    if len(input_list) == 0:
+        return "You Have Been Sneak Attacked by an Error", "Expected the name of a season", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
 
+    if not (svar_dict := get_svar("weather_settings")):
+        return "You Have Been Sneak Attacked by an Error", "SVAR `weather_settings` does not exist", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
+
+    else:
+        svar_dict = load_json(svar_dict)
+
+    locations = list(svar_dict.keys())
+
+    try:
+        locations.remove("Settings")
+
+    except:
+       return "You Have Been Sneak Attacked by an Error", "SVAR `weather_settings` does not have any settings", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
 
+    if len(locations) == 0:
+        return "You Have Been Sneak Attacked by an Error", "you have no locations setup", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
 
+    priority_dict = {}
+    location_dict = {999:[]}
+
+    for location in locations:
+
+        seasons = list(svar_dict[location].keys())
+        try:
+            seasons.remove("priority")
+
+        except:
+            pass
+
+        if (search_result := search_list(input_list[0], svar_dict[location].keys())):
+
+            if len(search_result) == 1:
+                location_dict[location] = svar_dict[location][search_result[0]]
+
+            else:
+                if (match := multiple_match_determine(search_result, input_list[0])):
+                    location_dict[location] = svar_dict[location][match]
 
 
+    for location in location_dict.keys():
+
+        if "priority" in svar_dict[location].keys():
+
+            if (priority_level := svar_dict[location]["priority"]) in priority_dict.keys():
+                priority_dict[priority_level].append(location)
+
+            else:
+                priority_dict[priority_level] = [location]
+
+        else:
+            priority_dict[999].append(location)
+
+
+        output_list = []
+
+        if "temp_dice" in location_dict[location].keys() and "temp_base" in location_dict[location].keys():
+
+            dice_obj = vroll(location_dict[location]['temp_dice'] + f"+{location_dict[location]['temp_base']}")
+
+            if svar_dict["Settings"]["unit"] = "imperial":
+                output_list.append(f"**Temperature:** {dice_obj.dice} = `{dice_obj.total}` °F ({convert_measurement("f", dice_obj.total)} C°)")
+
+            else:
+                output_list.append(f"**Temperature:** {dice_obj.dice} = `{dice_obj.total}` °C ({convert_measurement("c", dice_obj.total)} F°)")
+
+            if "temp" in svar_dict["Settings"].keys():
+                for condition in svar_dict["Settings"]["temp"].keys():
+
+                    if svar_dict["Settings"]["temp"][condition]["minRate"] <= dice_obj.total <= svar_dict["Settings"]["temp"][condition]["maxRate"]:
+                        output_list.append(f"**Temperature Condition:** {condition}")
+
+        else:
+            output_list.append("**Temperature:** `ERROR`, missing dice and/or base")
+
+
+        output_list.append("")
+
+
+        if "water_dice" in location_dict[location].keys() and "water_conditions" in location_dict[location].keys():
+            
+            dice_obj = vroll(location_dict[location]['water_dice'])
+            water_dict = dict()
+
+            if location_dict[location]["water_conditions"] != dict():
+                water_condition_name = location_dict[location]['water_conditions'][threshold_finder(location_dict[location]["water_conditions"], dice_obj.total)]
+
+                output_list.append(f"**Moisture:** {dice_obj.dice} = `{dice_obj.total}`; {water_condition_name}")
+
+                if (search_result := search_list(water_condition_name, svar_dict["Settings"]["water"].keys())):
+
+                    if len(search_result) == 1:
+                        water_dict = svar_dict["Settings"]["water"][search_result[0]]
+
+                    else:
+                        if (match := multiple_match_determine(search_result, water_condition_name)):
+                            water_dict = svar_dict["Settings"]["water"][match]
+
+                        else:
+                            output_list.append(f"**Moisture Result:** `ERROR`, no exact match on condition threshold")
+
+                else:
+                    output_list.append(f"**Moisture Result:** `ERROR`, Condition not found")
+
+                
+                if water_dict != dict():
+
+                    if "minRate" in water_dict.keys() and "maxRate" in water_dict.keys():
+                        rate = random_float(water_dict["minRate"], max_rate["maxRate"], 2)
+
+                        if svar_dict["Settings"]["unit"] = "imperial":
+                            output_list.append(f"**Moisture Result:** `{rate}` in/hr ({convert_measurement("in/hr", rate)} mm/hr)")
+
+                        else:
+                            output_list.append(f"**Moisture Result:** `{rate}` mm/hr ({convert_measurement("mm/hr", rate)} in/hr)")
+
+                    if "condition" in water_dict.keys():
+                        output_list.append(f"**Moisture Condition:** {water_dict['condition']}")
+
+            else:
+                output_list.append("**Moisture:** `ERROR`, missing conditions")
+
+        else:
+            output_list.append("**Moisture:** `ERROR`, missing dice and/or conditions")
+
+
+        if "wind_dice" in location_dict[location].keys() and "wind_conditions" in location_dict[location].keys():
+            
+            dice_obj = vroll(location_dict[location]['wind_dice'])
+            wind_dict = dict()
+
+            if location_dict[location]["wind_conditions"] != dict():
+                wind_condition_name = location_dict[location]['wind_conditions'][threshold_finder(location_dict[location]["wind_conditions"], dice_obj.total)]
+
+                output_list.append(f"**Wind:** {dice_obj.dice} = `{dice_obj.total}`; {wind_condition_name}")
+
+                if (search_result := search_list(wind_condition_name, svar_dict["Settings"]["wind"].keys())):
+
+                    if len(search_result) == 1:
+                        wind_dict = svar_dict["Settings"]["wind"][search_result[0]]
+
+                    else:
+                        if (match := multiple_match_determine(search_result, wind_condition_name)):
+                            wind_dict = svar_dict["Settings"]["wind"][match]
+
+                        else:
+                            output_list.append(f"**Wind Result:** `ERROR`, no exact match on condition threshold")
+
+                else:
+                    output_list.append(f"**Wind Result:** `ERROR`, Condition not found")
+
+                
+                if wind_dict != dict():
+
+                    if "minRate" in wind_dict.keys() and "maxRate" in wind_dict.keys():
+                        rate = random_float(wind_dict["minRate"], max_rate["maxRate"], 2)
+
+                        if svar_dict["Settings"]["unit"] = "imperial":
+                            output_list.append(f"**Wind Result:** `{rate}` mph ({convert_measurement("mph", rate)} km/h)")
+
+                        else:
+                            output_list.append(f"**Wind Result:** `{rate}` km/h ({convert_measurement("km/h", rate)} mph)")
+
+                    if "condition" in wind_dict.keys():
+                        output_list.append(f"**Wind Condition:** {wind_dict['condition']}")
+
+            else:
+                output_list.append("**Wind:** `ERROR`, missing conditions")
+
+        else:
+            output_list.append("**Wind:** `ERROR`, missing dice and/or conditions")
+
+        location_dict[location] = "\n".join(output_list)
+
+
+    priority_levels = priority_dict.keys()
+    priority_levels.sort()
+
+    for priority in priority_dict.keys():
+        priority_dict[priority].sort()
+
+    output_list = [[]]
+    i = 0
+
+    for priority in priority_levels:
+        
+        for location in priority_dict[priority].keys():
+
+            if len(output_list[i]) == 3:
+                output_list.append([f"**{location}:**\n\n{location_dict[location]}"])
+                i += 1
+
+            else:
+                output_list[i].append(f"**{location}:**\n\n{location_dict[location]}")
+    
+    if len(input_list) == 1:
+        page_num = 1
+
+    else:
+        try:
+            page_num = int(input_list[1]) + 1
+
+            if page_num < 1:
+                page_num = 1
+
+            elif page_num > len(output_list):
+                page_num = len(output_list)
+
+            else:
+                pass
+
+        except:
+            page_num = 1
+
+    page_num += -1
+
+
+    final_output_list = [
+        f"**Page {page_num}/{len(output_list)}**",
+    ]
+
+    for location in output_list[page_num]:
+        final_output_list.append(location)
+        final_output_list.append("\n")
+
+    url = ""
+    if "url" in svar_dict["Settings"].keys():
+
+        if svar_dict["Settings"]["url"] != dict():
+
+            if (search_result := search_list(input_list[0], svar_dict["Settings"]["url"].keys())):
+
+                if len(search_result) == 1:
+                    url = svar_dict["Settings"]["url"][search_result[0]]
+
+                else:
+                    if (match := multiple_match_determine(search_result, input_list[0])):
+                        url = svar_dict["Settings"]["url"][match]
+
+    color = ""
+    
+    if "color" in svar_dict["Settings"].keys():
+
+        if svar_dict["Settings"]["color"] != dict():
+
+            if (search_result := search_list(input_list[0], svar_dict["Settings"]["color"].keys())):
+
+                if len(search_result) == 1:
+                    try:
+                        color = randchoice(svar_dict["Settings"]["color"][search_result[0]])
+
+                    except:
+                        pass
+
+                else:
+                    if (match := multiple_match_determine(search_result, input_list[0])):
+                        try:
+                            color = randchoice(svar_dict["Settings"]["color"][match])
+
+                        except:
+                            pass
+
+    return "Weather Report", "\n".join(final_output_list), color, url, footer
+
+
+title, f, color, thumb, footer = main(&ARGS&)
 
 
 </drac2>
+-title "{{title}}"
+-f "{{f}}"
+-color "{{color}}"
+-thumb "{{thumb}}"
+-footer "{{footer}}"
