@@ -169,7 +169,52 @@ def main(input_list: list[str]):
             priority_dict[999].append(location)
 
 
-        output_list = []
+    priority_levels = priority_dict.keys()
+    priority_levels.sort()
+
+    for priority in priority_dict.keys():
+        priority_dict[priority].sort()
+
+
+    actual_priority_list = [[]]
+    i = 0
+
+    for priority_level in priority_levels:
+
+        for location in priority_dict[priority_level]:
+
+            if len(actual_priority_list[i]) == 3:
+                i += 1
+                actual_priority_list.append([])
+
+            actual_priority_list[i].append(location)
+
+
+    if len(input_list) == 1:
+        page_num = 1
+
+    else:
+        try:
+            page_num = int(input_list[1])
+
+            if page_num < 1:
+                page_num = 1
+
+            elif page_num > len(actual_priority_list):
+                page_num = len(actual_priority_list)
+
+            else:
+                pass
+
+        except:
+            page_num = 1
+
+    page_num += -1
+
+    full_output_list = []
+
+    for location in actual_priority_list[page_num]:
+        output_list = [f"**{location}**\n"]
 
         if "temp_dice" in location_dict[location].keys() and "temp_base" in location_dict[location].keys():
 
@@ -287,58 +332,9 @@ def main(input_list: list[str]):
         else:
             output_list.append("**Wind:** `ERROR`, missing dice and/or conditions")
 
-        location_dict[location] = "\n".join(output_list)
+        full_output_list.append("\n".join(output_list))
 
-
-    priority_levels = priority_dict.keys()
-    priority_levels.sort()
-
-    for priority in priority_dict.keys():
-        priority_dict[priority].sort()
-
-    output_list = [[]]
-    i = 0
-
-    for priority in priority_levels:
-        
-        for location in priority_dict[priority].keys():
-
-            if len(output_list[i]) == 3:
-                output_list.append([f"**{location}:**\n\n{location_dict[location]}"])
-                i += 1
-
-            else:
-                output_list[i].append(f"**{location}:**\n\n{location_dict[location]}")
-    
-    if len(input_list) == 1:
-        page_num = 1
-
-    else:
-        try:
-            page_num = int(input_list[1]) + 1
-
-            if page_num < 1:
-                page_num = 1
-
-            elif page_num > len(output_list):
-                page_num = len(output_list)
-
-            else:
-                pass
-
-        except:
-            page_num = 1
-
-    page_num += -1
-
-
-    final_output_list = [
-        f"**Page {page_num}/{len(output_list)}**",
-    ]
-
-    for location in output_list[page_num]:
-        final_output_list.append(location)
-        final_output_list.append("\n")
+    final_output_list.insert(0, f"**Page {page_num}/{len(actual_priority_list)}**")
 
     url = ""
     if "url" in svar_dict["Settings"].keys():
