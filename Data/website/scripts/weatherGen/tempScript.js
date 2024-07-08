@@ -14,16 +14,16 @@ function createTemperatureSetting() {
     fieldset.appendChild(legend);
 
     const nameInput = createInputElement(`temperatureSettingName${temperatureSettingCount}`, "text", "Setting Name:");
-    const minTempInput = createInputElement(`temperatureSettingMinTemp${temperatureSettingCount}`, "number", "Min Temp:", 0.01);
-    const maxTempInput = createInputElement(`temperatureSettingMaxTemp${temperatureSettingCount}`, "number", "Max Temp:", 0.01);
+    const minRateInput = createInputElement(`temperatureSettingMinRate${temperatureSettingCount}`, "number", "Min Temp:", 0.01);
+    const maxRateInput = createInputElement(`temperatureSettingMaxRate${temperatureSettingCount}`, "number", "Max Temp:", 0.01);
     const conditionInput = createInputElement(`temperatureSettingCondition${temperatureSettingCount}`, "text", "Condition:");
 
     fieldset.appendChild(nameInput.label);
     fieldset.appendChild(nameInput.input);
-    fieldset.appendChild(minTempInput.label);
-    fieldset.appendChild(minTempInput.input);
-    fieldset.appendChild(maxTempInput.label);
-    fieldset.appendChild(maxTempInput.input);
+    fieldset.appendChild(minRateInput.label);
+    fieldset.appendChild(minRateInput.input);
+    fieldset.appendChild(maxRateInput.label);
+    fieldset.appendChild(maxRateInput.input);
     fieldset.appendChild(conditionInput.label);
     fieldset.appendChild(conditionInput.input);
 
@@ -68,13 +68,13 @@ function collectTempSettings() {
     const fieldsets = container.querySelectorAll("fieldset");
     fieldsets.forEach((fieldset) => {
         const name = fieldset.querySelector(`#temperatureSettingName${fieldset.temperatureSettingIndex}`).value;
-        const minTemp = parseFloat(fieldset.querySelector(`#temperatureSettingMinTemp${fieldset.temperatureSettingIndex}`).value);
-        const maxTemp = parseFloat(fieldset.querySelector(`#temperatureSettingMaxTemp${fieldset.temperatureSettingIndex}`).value);
+        const minRate = parseFloat(fieldset.querySelector(`#temperatureSettingMinRate${fieldset.temperatureSettingIndex}`).value);
+        const maxRate = parseFloat(fieldset.querySelector(`#temperatureSettingMaxRate${fieldset.temperatureSettingIndex}`).value);
         const condition = fieldset.querySelector(`#temperatureSettingCondition${fieldset.temperatureSettingIndex}`).value;
-        if (name && !isNaN(minTemp) && !isNaN(maxTemp) && condition) {
+        if (name && !isNaN(minRate) && !isNaN(maxRate) && condition) {
             tempData[name] = {
-                minTemp,
-                maxTemp,
+                minRate,
+                maxRate,
                 condition
             };
         }
@@ -101,20 +101,20 @@ function validateTemperatureSettings() {
 
 function validateTemperatureMinMax() {
     for (let i = 0; i < temperatureSettings.length; i++) {
-        const minTempInput = document.getElementById(`temperatureSettingMinTemp${i + 1}`);
-        const maxTempInput = document.getElementById(`temperatureSettingMaxTemp${i + 1}`);
-        const minTemp = parseFloat(minTempInput.value);
-        const maxTemp = parseFloat(maxTempInput.value);
-        if (!isNaN(minTemp) && isNaN(maxTemp)) {
+        const minRateInput = document.getElementById(`temperatureSettingMinRate${i + 1}`);
+        const maxRateInput = document.getElementById(`temperatureSettingMaxRate${i + 1}`);
+        const minRate = parseFloat(minRateInput.value);
+        const maxRate = parseFloat(maxRateInput.value);
+        if (!isNaN(minRate) && isNaN(maxRate)) {
             alert(`Error: Temperature Setting ${i + 1} has a 'min_temp' without a 'max_temp'. Both must be provided together.`);
             return false;
         }
-        if (!isNaN(maxTemp) && isNaN(minTemp)) {
+        if (!isNaN(maxRate) && isNaN(minRate)) {
             alert(`Error: Temperature Setting ${i + 1} has a 'max_temp' without a 'min_temp'. Both must be provided together.`);
             return false;
         }
-        if (!isNaN(minTemp) && !isNaN(maxTemp) && maxTemp <= minTemp) {
-            alert(`Error: Temperature Setting ${i + 1} has 'max_temp' (${maxTemp}) less than or equal to 'min_temp' (${minTemp}).`);
+        if (!isNaN(minRate) && !isNaN(maxRate) && maxRate <= minRate) {
+            alert(`Error: Temperature Setting ${i + 1} has 'max_temp' (${maxRate}) less than or equal to 'min_temp' (${minRate}).`);
             return false;
         }
     }
