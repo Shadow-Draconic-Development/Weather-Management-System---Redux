@@ -10,7 +10,7 @@ async function generateJSON() {
         water: {},
         wind: {},
         temp: {},
-        colors: {},
+        color: {},
         url: {},
         unit: "",
     };
@@ -41,7 +41,7 @@ async function generateJSON() {
         alert("Error collecting color settings. Please check the inputs and try again.");
         return null;
     }
-    settings.colors = colorSettings;
+    settings.color = colorSettings;
 
     const { imageUrls, urlsValid } = await collectSeasonUrls();
     if (!urlsValid) {
