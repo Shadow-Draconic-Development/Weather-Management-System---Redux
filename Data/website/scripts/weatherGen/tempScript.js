@@ -106,15 +106,15 @@ function validateTemperatureMinMax() {
         const minRate = parseFloat(minRateInput.value);
         const maxRate = parseFloat(maxRateInput.value);
         if (!isNaN(minRate) && isNaN(maxRate)) {
-            alert(`Error: Temperature Setting ${i + 1} has a 'min_temp' without a 'max_temp'. Both must be provided together.`);
+            alert(`Error: Temperature Setting ${i + 1} has a 'min_rate' without a 'max_rate'. Both must be provided together.`);
             return false;
         }
         if (!isNaN(maxRate) && isNaN(minRate)) {
-            alert(`Error: Temperature Setting ${i + 1} has a 'max_temp' without a 'min_temp'. Both must be provided together.`);
+            alert(`Error: Temperature Setting ${i + 1} has a 'max_rate' without a 'min_rate'. Both must be provided together.`);
             return false;
         }
         if (!isNaN(minRate) && !isNaN(maxRate) && maxRate <= minRate) {
-            alert(`Error: Temperature Setting ${i + 1} has 'max_temp' (${maxRate}) less than or equal to 'min_temp' (${minRate}).`);
+            alert(`Error: Temperature Setting ${i + 1} has 'max_rate' (${maxRate}) less than or equal to 'min_rate' (${minRate}).`);
             return false;
         }
     }
