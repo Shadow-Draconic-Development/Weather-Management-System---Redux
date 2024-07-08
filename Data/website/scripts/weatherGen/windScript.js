@@ -10,7 +10,7 @@ function createWindSetting() {
     fieldset.windSettingIndex = windSettingCount;
 
     const legend = document.createElement("legend");
-    legend.textContent = `Wind Setting`;
+    legend.textContent = `Wind Setting ${windSettingCount}`;
     fieldset.appendChild(legend);
 
     const nameInput = createInputElement(`windSettingName${windSettingCount}`, "text", "Setting Name:");
@@ -68,15 +68,16 @@ function collectWindSettings() {
     const fieldsets = container.querySelectorAll("fieldset");
     fieldsets.forEach((fieldset) => {
         const name = fieldset.querySelector(`#windSettingName${fieldset.windSettingIndex}`).value;
-        const minRate = parseFloat(fieldset.querySelector(`#windSettingMinRate${fieldset.windSettingIndex}`).value);
-        const maxRate = parseFloat(fieldset.querySelector(`#windSettingMaxRate${fieldset.windSettingIndex}`).value);
-        const condition = fieldset.querySelector(`#windSettingCondition${fieldset.windSettingIndex}`).value;
-        if (name && !isNaN(minRate) && !isNaN(maxRate) && condition) {
-            windData[name] = {
-                minRate,
-                maxRate,
-                condition
-            };
+        if (name) {
+            const minRate = parseFloat(fieldset.querySelector(`#windSettingMinRate${fieldset.windSettingIndex}`).value);
+            const maxRate = parseFloat(fieldset.querySelector(`#windSettingMaxRate${fieldset.windSettingIndex}`).value);
+            const condition = fieldset.querySelector(`#windSettingCondition${fieldset.windSettingIndex}`).value.trim();
+            const entry = {};
+            if (!isNaN(minRate)) entry.minRate = minRate;
+            if (!isNaN(maxRate)) entry.maxRate = maxRate;
+            if (condition) entry.condition = condition;
+
+            windData[name] = entry;
         }
     });
     return windData;
@@ -105,12 +106,8 @@ function validateWindMinMaxRates() {
         const maxRateInput = document.getElementById(`windSettingMaxRate${i + 1}`);
         const minRate = parseFloat(minRateInput.value);
         const maxRate = parseFloat(maxRateInput.value);
-        if (!isNaN(minRate) && isNaN(maxRate)) {
-            alert(`Error: Wind Setting ${i + 1} has a 'min_rate' without a 'max_rate'. Both must be provided together.`);
-            return false;
-        }
-        if (!isNaN(maxRate) && isNaN(minRate)) {
-            alert(`Error: Wind Setting ${i + 1} has a 'max_rate' without a 'min_rate'. Both must be provided together.`);
+        if ((!isNaN(minRate) && isNaN(maxRate)) || (isNaN(minRate) && !isNaN(maxRate))) {
+            alert(`Error: Wind Setting ${i + 1} must have both 'min_rate' and 'max_rate' or neither.`);
             return false;
         }
         if (!isNaN(minRate) && !isNaN(maxRate) && maxRate <= minRate) {

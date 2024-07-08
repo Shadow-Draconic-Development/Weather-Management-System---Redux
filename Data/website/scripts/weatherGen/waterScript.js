@@ -10,7 +10,7 @@ function createWaterSetting() {
     fieldset.waterSettingIndex = waterSettingCount;
 
     const legend = document.createElement("legend");
-    legend.textContent = `Water Setting`;
+    legend.textContent = `Water Setting ${waterSettingCount}`;
     fieldset.appendChild(legend);
 
     const nameInput = createInputElement(`waterSettingName${waterSettingCount}`, "text", "Setting Name:");
@@ -68,15 +68,16 @@ function collectWaterSettings() {
     const fieldsets = container.querySelectorAll("fieldset");
     fieldsets.forEach((fieldset) => {
         const name = fieldset.querySelector(`#waterSettingName${fieldset.waterSettingIndex}`).value;
-        const minRate = parseFloat(fieldset.querySelector(`#waterSettingMinRate${fieldset.waterSettingIndex}`).value);
-        const maxRate = parseFloat(fieldset.querySelector(`#waterSettingMaxRate${fieldset.waterSettingIndex}`).value);
-        const condition = fieldset.querySelector(`#waterSettingCondition${fieldset.waterSettingIndex}`).value;
-        if (name && !isNaN(minRate) && !isNaN(maxRate) && condition) {
-            waterData[name] = {
-                minRate,
-                maxRate,
-                condition
-            };
+        if (name) {
+            const minRate = parseFloat(fieldset.querySelector(`#waterSettingMinRate${fieldset.waterSettingIndex}`).value);
+            const maxRate = parseFloat(fieldset.querySelector(`#waterSettingMaxRate${fieldset.waterSettingIndex}`).value);
+            const condition = fieldset.querySelector(`#waterSettingCondition${fieldset.waterSettingIndex}`).value.trim();
+            const entry = {};
+            if (!isNaN(minRate)) entry.minRate = minRate;
+            if (!isNaN(maxRate)) entry.maxRate = maxRate;
+            if (condition) entry.condition = condition;
+
+            waterData[name] = entry;
         }
     });
     return waterData;
@@ -95,28 +96,6 @@ function validateWaterSettings() {
             return false;
         }
         settingNames.add(settingName);
-    }
-    return true;
-}
-
-function validateMinMaxRates() {
-    for (let i = 0; i < waterSettings.length; i++) {
-        const minRateInput = document.getElementById(`waterSettingMinRate${i + 1}`);
-        const maxRateInput = document.getElementById(`waterSettingMaxRate${i + 1}`);
-        const minRate = parseFloat(minRateInput.value);
-        const maxRate = parseFloat(maxRateInput.value);
-        if (!isNaN(minRate) && isNaN(maxRate)) {
-            alert(`Error: Water Setting ${i + 1} has a 'min_rate' without a 'max_rate'. Both must be provided together.`);
-            return false;
-        }
-        if (!isNaN(maxRate) && isNaN(minRate)) {
-            alert(`Error: Water Setting ${i + 1} has a 'max_rate' without a 'min_rate'. Both must be provided together.`);
-            return false;
-        }
-        if (!isNaN(minRate) && !isNaN(maxRate) && maxRate <= minRate) {
-            alert(`Error: Water Setting ${i + 1} has 'max_rate' (${maxRate}) less than or equal to 'min_rate' (${minRate}).`);
-            return false;
-        }
     }
     return true;
 }
@@ -140,4 +119,4 @@ function createInputElement(id, type, labelText, step = null) {
 
 document.getElementById("addWaterSetting").addEventListener("click", createWaterSetting);
 
-export { waterSettings, validateWaterSettings, validateMinMaxRates, collectWaterSettings };
+export { waterSettings, validateWaterSettings, collectWaterSettings };
