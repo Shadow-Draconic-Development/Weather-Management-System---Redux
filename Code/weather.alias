@@ -23,7 +23,17 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def multiple_match_determine(search_result: list[str], input_value: str):
+def multiple_match_determine(search_result: list[str], input_value: str) -> str|bool:
+    """
+    Detemines if there is an exact match in search results
+    
+    Args:
+        search_result (list[str]): List of search results
+        input_value (str): Input value to match
+
+    Returns:
+        str|bool: The exact match if found, otherwise False
+    """
 
     for match in search_result:
         if match.lower() == input_value.lower():
@@ -78,66 +88,121 @@ def convert_measurement(units: str, amount: float) -> float:
 
 
 def threshold_finder(threshold_dict: dict, value: int|float) -> str:
+    """
+    Finds the appropriate threshold for a given value.
 
+    Args:
+        threshold_dict (dict): Dictionary of thresholds
+        value (int|float): Value to find the threshold for
+
+    Returns:
+        str: The threshold found
+    """
+
+    # Sorts the threshold values
     threshold_list = list(threshold_dict.keys())
     threshold_list.sort()
 
     threshold = ""
     value = str(value)
 
+
+    # For each threshold in the list
     for thresh in threshold_list:
+
+        # If the value is greater than the threshold
         if value >= thresh:
             threshold = thresh
 
+            # If it is the last threshold
+            if thresh == threshold_list[-1]:
+                return threshold
+
+        # If the value is not greater than the threshold
         else:
             return threshold
 
+    # If no threshold is found, resort to base threshold
     return threshold_list[0]
 
 
-def random_float(start, end, precision=5):
+def random_float(start: float, end: float, precision=5: int):
+    """
+    Generates a random float between the specified minimum and maximum values.
 
+    Args:
+        min_value (float): The minimum value for the random float.
+        max_value (float): The maximum value for the random float.
+        precision (int): How many decimal places, default 5.
+
+    Returns:
+        float: A random float between min_value and max_value.
+    """
+
+    # Creates the factor
     factor = 10 ** precision
 
+    # Generates the random number 
     random_integer = randint(int(start * factor), int(end * factor))
 
+    # Return random float
     return random_integer / factor
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str, str, str, str):
+    """
+    Main program function
 
+    Args:
+        input_list (list[str]): List of inputs
+
+    Return:
+        str: Title
+        str: Main body paragraph
+        str: Color hex code
+        str: Image URL
+        str: Footer
+    """
+
+    # Setup footer
     prefix = ctx.prefix
-    footer = f"{prefix}weather [season name] <#> | 7/6/24 | ShadowsStride" 
+    footer = f"{prefix}weather [season name] <#> | 7/8/24 | ShadowsStride" 
 
-
+    # If no inputs were recieved
     if len(input_list) == 0:
         return "You Have Been Sneak Attacked by an Error", "Expected the name of a season", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
-
+    # If the SVAR weather_settings does not exist
     if not (svar_dict := get_svar("weather_settings")):
         return "You Have Been Sneak Attacked by an Error", "SVAR `weather_settings` does not exist", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
+    # If the SVAR exists, load it into a dictionary
     else:
         svar_dict = load_json(svar_dict)
 
+    # List locations
     locations = list(svar_dict.keys())
 
+    # Try to remove settings as a key
     try:
         locations.remove("Settings")
 
+    # If settings does not exist, throw error
     except:
        return "You Have Been Sneak Attacked by an Error", "SVAR `weather_settings` does not have any settings", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
-
+    # If there are no locations
     if len(locations) == 0:
-        return "You Have Been Sneak Attacked by an Error", "you have no locations setup", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
+        return "You Have Been Sneak Attacked by an Error", "You have no locations setup", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
-
+    # Create dictionaries
     priority_dict = {}
-    location_dict = {999:[]}
+    location_dict = {}
 
+    # For each loexation
     for location in locations:
 
+        # Grab the seasons, not including the priority
         seasons = list(svar_dict[location].keys())
         try:
             seasons.remove("priority")
@@ -145,235 +210,345 @@ def main(input_list: list[str]):
         except:
             pass
 
-        if (search_result := search_list(input_list[0], svar_dict[location].keys())):
+        # If the season specified exists
+        if (search_result := search_list(input_list[0], seasons)):
 
+            # If there is exactly one match
             if len(search_result) == 1:
                 location_dict[location] = svar_dict[location][search_result[0]]
 
+            # If there is more than one match
             else:
+
+                # If there is an exact match
                 if (match := multiple_match_determine(search_result, input_list[0])):
                     location_dict[location] = svar_dict[location][match]
 
+        # For each location that is in location_dict
+        if location in location_dict.keys():
 
-    for location in location_dict.keys():
+            # If priority is in the dictionary
+            if "priority" in svar_dict[location].keys():
 
-        if "priority" in svar_dict[location].keys():
+                # If priority already exists in the priority_dice, append
+                if (priority_level := int(svar_dict[location]["priority"])) in priority_dict.keys():
+                    priority_dict[priority_level].append(location)
 
-            if (priority_level := svar_dict[location]["priority"]) in priority_dict.keys():
-                priority_dict[priority_level].append(location)
+                # Otherwise create new priority level
+                else:
+                    priority_dict[priority_level] = [location]
 
+            # If no priority, revert to default priority level
             else:
-                priority_dict[priority_level] = [location]
+                priority_dict[999].append(location)
 
-        else:
-            priority_dict[999].append(location)
-
-
-    priority_levels = priority_dict.keys()
+    # Get priority levels and sort them
+    priority_levels = list(priority_dict.keys())
     priority_levels.sort()
 
+    # For each priority within the priority dictionary, 
     for priority in priority_dict.keys():
         priority_dict[priority].sort()
 
-
+    # Create priority list (allows for only those being shown to be calculated)
     actual_priority_list = [[]]
     i = 0
 
+    # For each priority level
     for priority_level in priority_levels:
 
+        # For each location within the priority level
         for location in priority_dict[priority_level]:
 
-            if len(actual_priority_list[i]) == 3:
+            # If there are two locations already, create new list
+            if len(actual_priority_list[i]) == 2:
                 i += 1
                 actual_priority_list.append([])
 
+            # Place location in priority list
             actual_priority_list[i].append(location)
 
-
+    # If input list does not involve a page number
     if len(input_list) == 1:
         page_num = 1
 
+    # If it does
     else:
+
+        # Try converting to integer
         try:
             page_num = int(input_list[1])
 
+            # If page number is less than one
             if page_num < 1:
                 page_num = 1
 
+            # If page number is greater than the number of pages
             elif page_num > len(actual_priority_list):
                 page_num = len(actual_priority_list)
 
+            # If within sweet spot
             else:
                 pass
 
+        # If failed, set number to one
         except:
             page_num = 1
 
+    # Remove one from page number to use index
     page_num += -1
 
+    # Create full output list
     full_output_list = []
 
-    for location in actual_priority_list[page_num]:
-        output_list = [f"**{location}**\n"]
+    # If there are locations in the page specified
+    if len(actual_priority_list[page_num]) > 0:
 
-        if "temp_dice" in location_dict[location].keys() and "temp_base" in location_dict[location].keys():
+        # For each location in the list that is specified
+        for location in actual_priority_list[page_num]:
 
-            dice_obj = vroll(location_dict[location]['temp_dice'] + f"+{location_dict[location]['temp_base']}")
+            # Location header
+            output_list = [f"**{location}**\n"]
 
-            if svar_dict["Settings"]["unit"] = "imperial":
-                output_list.append(f"**Temperature:** {dice_obj.dice} = `{dice_obj.total}` °F ({convert_measurement("f", dice_obj.total)} C°)")
+            # If the temp_dice and temp_base is within the season
+            if "temp_dice" in location_dict[location].keys() and "temp_base" in location_dict[location].keys():
 
-            else:
-                output_list.append(f"**Temperature:** {dice_obj.dice} = `{dice_obj.total}` °C ({convert_measurement("c", dice_obj.total)} F°)")
+                # Rolls the temp dice and base
+                dice_obj = vroll(location_dict[location]['temp_dice'] + f"+{location_dict[location]['temp_base']}")
 
-            if "temp" in svar_dict["Settings"].keys():
-                for condition in svar_dict["Settings"]["temp"].keys():
+                # If unit is imperial
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    output_list.append(f"***Temperature:*** {dice_obj.dice} = `{dice_obj.total}` °F (`{convert_measurement('f', dice_obj.total)}` C°)")
 
-                    if svar_dict["Settings"]["temp"][condition]["minRate"] <= dice_obj.total <= svar_dict["Settings"]["temp"][condition]["maxRate"]:
-                        output_list.append(f"**Temperature Condition:** {condition}")
-
-        else:
-            output_list.append("**Temperature:** `ERROR`, missing dice and/or base")
-
-
-        output_list.append("")
-
-
-        if "water_dice" in location_dict[location].keys() and "water_conditions" in location_dict[location].keys():
-            
-            dice_obj = vroll(location_dict[location]['water_dice'])
-            water_dict = dict()
-
-            if location_dict[location]["water_conditions"] != dict():
-                water_condition_name = location_dict[location]['water_conditions'][threshold_finder(location_dict[location]["water_conditions"], dice_obj.total)]
-
-                output_list.append(f"**Moisture:** {dice_obj.dice} = `{dice_obj.total}`; {water_condition_name}")
-
-                if (search_result := search_list(water_condition_name, svar_dict["Settings"]["water"].keys())):
-
-                    if len(search_result) == 1:
-                        water_dict = svar_dict["Settings"]["water"][search_result[0]]
-
-                    else:
-                        if (match := multiple_match_determine(search_result, water_condition_name)):
-                            water_dict = svar_dict["Settings"]["water"][match]
-
-                        else:
-                            output_list.append(f"**Moisture Result:** `ERROR`, no exact match on condition threshold")
-
+                # If unit is metric
                 else:
-                    output_list.append(f"**Moisture Result:** `ERROR`, Condition not found")
+                    output_list.append(f"***Temperature:*** {dice_obj.dice} = `{dice_obj.total}` °C (`{convert_measurement('c', dice_obj.total)}` F°)")
 
+                # Checks to see if temp is in settings
+                if "temp" in svar_dict["Settings"].keys():
+
+                    # For each condition
+                    for condition in svar_dict["Settings"]["temp"].keys():
+
+                        # If settings has minRate and maxRate
+                        if "minRate" in svar_dict["Settings"]["temp"][condition].keys() and "maxRate" in svar_dict["Settings"]["temp"][condition].keys():
+
+                            # If rolled temperature is within condition parameters
+                            if svar_dict["Settings"]["temp"][condition]["minRate"] <= dice_obj.total <= svar_dict["Settings"]["temp"][condition]["maxRate"]:
+                                output_list.append(f"***Temperature Condition:*** {condition}")
+
+                                # If condition has effects
+                                if "condition" in svar_dict["Settings"]["temp"][condition].keys():
+                                    output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition']}")
+
+            # If the temp_dice and/or temp base is not within the season
+            else:
+                output_list.append("***Temperature:*** `ERROR`, missing dice and/or base")
+
+            # Add spacer
+            output_list.append("")
+
+            # If the water_dice and the water_conditions is within the season
+            if "water_dice" in location_dict[location].keys() and "water_conditions" in location_dict[location].keys():
                 
-                if water_dict != dict():
+                # Rolls the water dice
+                dice_obj = vroll(location_dict[location]['water_dice'])
+                water_dict = dict()
 
-                    if "minRate" in water_dict.keys() and "maxRate" in water_dict.keys():
-                        rate = random_float(water_dict["minRate"], max_rate["maxRate"], 2)
+                # If water conditions is not empty
+                if location_dict[location]["water_conditions"] != dict():
 
-                        if svar_dict["Settings"]["unit"] = "imperial":
-                            output_list.append(f"**Moisture Result:** `{rate}` in/hr ({convert_measurement("in/hr", rate)} mm/hr)")
+                    # Grab water condition name
+                    water_condition_name = location_dict[location]['water_conditions'][threshold_finder(location_dict[location]["water_conditions"], dice_obj.total)]
 
+                    # Show dice roll
+                    output_list.append(f"***Moisture:*** {dice_obj.dice} = `{dice_obj.total}`; {water_condition_name}")
+
+                    # If it can find the water settings 
+                    if (search_result := search_list(water_condition_name, svar_dict["Settings"]["water"].keys())):
+
+                        # If it found exactly one
+                        if len(search_result) == 1:
+                            water_dict = svar_dict["Settings"]["water"][search_result[0]]
+
+                        # If it found more than one, search for exact match
                         else:
-                            output_list.append(f"**Moisture Result:** `{rate}` mm/hr ({convert_measurement("mm/hr", rate)} in/hr)")
 
-                    if "condition" in water_dict.keys():
-                        output_list.append(f"**Moisture Condition:** {water_dict['condition']}")
+                            # If exact match
+                            if (match := multiple_match_determine(search_result, water_condition_name)):
+                                water_dict = svar_dict["Settings"]["water"][match]
 
-            else:
-                output_list.append("**Moisture:** `ERROR`, missing conditions")
+                            # If not exact match
+                            else:
+                                output_list.append(f"***Moisture Result:*** `ERROR`, no exact match on condition threshold")
 
-        else:
-            output_list.append("**Moisture:** `ERROR`, missing dice and/or conditions")
-
-
-        if "wind_dice" in location_dict[location].keys() and "wind_conditions" in location_dict[location].keys():
-            
-            dice_obj = vroll(location_dict[location]['wind_dice'])
-            wind_dict = dict()
-
-            if location_dict[location]["wind_conditions"] != dict():
-                wind_condition_name = location_dict[location]['wind_conditions'][threshold_finder(location_dict[location]["wind_conditions"], dice_obj.total)]
-
-                output_list.append(f"**Wind:** {dice_obj.dice} = `{dice_obj.total}`; {wind_condition_name}")
-
-                if (search_result := search_list(wind_condition_name, svar_dict["Settings"]["wind"].keys())):
-
-                    if len(search_result) == 1:
-                        wind_dict = svar_dict["Settings"]["wind"][search_result[0]]
-
+                    # If no matches
                     else:
-                        if (match := multiple_match_determine(search_result, wind_condition_name)):
-                            wind_dict = svar_dict["Settings"]["wind"][match]
+                        output_list.append(f"***Moisture Result:*** `ERROR`, Condition not found")
 
-                        else:
-                            output_list.append(f"**Wind Result:** `ERROR`, no exact match on condition threshold")
+                    # If water_dict is not empty
+                    if water_dict != dict():
 
+                        # If minRate and maxRate is in the water_dict 
+                        if "minRate" in water_dict.keys() and "maxRate" in water_dict.keys():
+                            rate = random_float(water_dict["minRate"], water_dict["maxRate"], 2)
+
+                            # If imperial
+                            if svar_dict["Settings"]["unit"] == "imperial":
+                                output_list.append(f"***Moisture Result:*** `{rate}` in/hr (`{convert_measurement('in/hr', rate)}` mm/hr)")
+
+                            # If metric
+                            else:
+                                output_list.append(f"***Moisture Result:*** `{rate}` mm/hr (`{convert_measurement('mm/hr', rate)}` in/hr)")
+
+                        # If there is a condition
+                        if "condition" in water_dict.keys():
+                            output_list.append(f"***Moisture Effects:*** {water_dict['condition']}")
+
+                # If water conditions is empty
                 else:
-                    output_list.append(f"**Wind Result:** `ERROR`, Condition not found")
+                    output_list.append("***Moisture:*** `ERROR`, missing conditions")
 
-                
-                if wind_dict != dict():
-
-                    if "minRate" in wind_dict.keys() and "maxRate" in wind_dict.keys():
-                        rate = random_float(wind_dict["minRate"], max_rate["maxRate"], 2)
-
-                        if svar_dict["Settings"]["unit"] = "imperial":
-                            output_list.append(f"**Wind Result:** `{rate}` mph ({convert_measurement("mph", rate)} km/h)")
-
-                        else:
-                            output_list.append(f"**Wind Result:** `{rate}` km/h ({convert_measurement("km/h", rate)} mph)")
-
-                    if "condition" in wind_dict.keys():
-                        output_list.append(f"**Wind Condition:** {wind_dict['condition']}")
-
+            # If water_dice and/or water_conditions is missing
             else:
-                output_list.append("**Wind:** `ERROR`, missing conditions")
+                output_list.append("***Moisture:*** `ERROR`, missing dice and/or conditions")
 
-        else:
-            output_list.append("**Wind:** `ERROR`, missing dice and/or conditions")
+            # Divider
+            output_list.append("")
 
-        full_output_list.append("\n".join(output_list))
+            # If wind_dice and wind_dice is in dictionary
+            if "wind_dice" in location_dict[location].keys() and "wind_conditions" in location_dict[location].keys():
+                
+                # Roll wind condition
+                dice_obj = vroll(location_dict[location]['wind_dice'])
+                wind_dict = dict()
 
-    final_output_list.insert(0, f"**Page {page_num}/{len(actual_priority_list)}**")
+                # If wind conditions is not empty, find condition name
+                if location_dict[location]["wind_conditions"] != dict():
+                    wind_condition_name = location_dict[location]['wind_conditions'][threshold_finder(location_dict[location]["wind_conditions"], dice_obj.total)]
 
-    url = ""
-    if "url" in svar_dict["Settings"].keys():
+                    # Output result
+                    output_list.append(f"***Wind:*** {dice_obj.dice} = `{dice_obj.total}`; {wind_condition_name}")
 
-        if svar_dict["Settings"]["url"] != dict():
+                    # If it finds the wind condition
+                    if (search_result := search_list(wind_condition_name, svar_dict["Settings"]["wind"].keys())):
 
-            if (search_result := search_list(input_list[0], svar_dict["Settings"]["url"].keys())):
+                        # If it finds an exact match
+                        if len(search_result) == 1:
+                            wind_dict = svar_dict["Settings"]["wind"][search_result[0]]
 
-                if len(search_result) == 1:
-                    url = svar_dict["Settings"]["url"][search_result[0]]
+                        # If there is more than one match
+                        else:
 
+                            # If there is an exact match
+                            if (match := multiple_match_determine(search_result, wind_condition_name)):
+                                wind_dict = svar_dict["Settings"]["wind"][match]
+
+                            # If there is not an exact match
+                            else:
+                                output_list.append(f"**Wind Result:*** `ERROR`, no exact match on condition threshold")
+
+                    # If it does not find the wind condition
+                    else:
+                        output_list.append(f"***Wind Result:*** `ERROR`, Condition not found")
+
+                    # If wind dictionary is not empty
+                    if wind_dict != dict():
+
+                        # If minRate and maxRate are in the dictionary, get random float
+                        if "minRate" in wind_dict.keys() and "maxRate" in wind_dict.keys():
+                            rate = random_float(wind_dict["minRate"], wind_dict["maxRate"], 2)
+
+                            # If imperial units
+                            if svar_dict["Settings"]["unit"] == "imperial":
+                                output_list.append(f"***Wind Result:*** `{rate}` mph (`{convert_measurement('mph', rate)}` km/h)")
+
+                            # If metric units
+                            else:
+                                output_list.append(f"***Wind Result:*** `{rate}` km/h (`{convert_measurement('km/h', rate)}` mph)")
+
+                        # If there is a condition
+                        if "condition" in wind_dict.keys():
+                            output_list.append(f"***Wind Effects:*** {wind_dict['condition']}")
+
+                # If wind conditions is empty
                 else:
-                    if (match := multiple_match_determine(search_result, input_list[0])):
-                        url = svar_dict["Settings"]["url"][match]
+                    output_list.append("***Wind:*** `ERROR`, missing conditions")
 
-    color = ""
-    
-    if "color" in svar_dict["Settings"].keys():
+            # If missing wind dice and/or conditions
+            else:
+                output_list.append("***Wind:*** `ERROR`, missing dice and/or conditions")
 
-        if svar_dict["Settings"]["color"] != dict():
+            # Divider
+            output_list.append("==================")
 
-            if (search_result := search_list(input_list[0], svar_dict["Settings"]["color"].keys())):
+            # Output
+            full_output_list.append("\n".join(output_list))
 
-                if len(search_result) == 1:
-                    try:
-                        color = randchoice(svar_dict["Settings"]["color"][search_result[0]])
+        # Insert header
+        full_output_list.insert(0, f"**Page {page_num + 1}/{len(actual_priority_list)}**\n==================")
 
-                    except:
-                        pass
+        # Use placeholder url
+        url = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
 
-                else:
-                    if (match := multiple_match_determine(search_result, input_list[0])):
+        # If url is in settings
+        if "url" in svar_dict["Settings"].keys():
+
+            # If url is not empty
+            if svar_dict["Settings"]["url"] != dict():
+
+                # Search for a match on season
+                if (search_result := search_list(input_list[0], svar_dict["Settings"]["url"].keys())):
+
+                    # If exactly one match
+                    if len(search_result) == 1:
+                        url = svar_dict["Settings"]["url"][search_result[0]]
+
+                    # If more than one match
+                    else:
+
+                        # If find exact match
+                        if (match := multiple_match_determine(search_result, input_list[0])):
+                            url = svar_dict["Settings"]["url"][match]
+
+        # Use placeholder color
+        color = ""
+        
+        # If color is in settings
+        if "color" in svar_dict["Settings"].keys():
+
+            # If color is not empty
+            if svar_dict["Settings"]["color"] != dict():
+
+                # Search for match on season
+                if (search_result := search_list(input_list[0], svar_dict["Settings"]["color"].keys())):
+
+                    # If exactly one match and list is not empty
+                    if len(search_result) == 1:
                         try:
-                            color = randchoice(svar_dict["Settings"]["color"][match])
+                            color = randchoice(svar_dict["Settings"]["color"][search_result[0]])
 
+                        # If list is empty
                         except:
                             pass
 
-    return "Weather Report", "\n".join(final_output_list), color, url, footer
+                    # If more than one match
+                    else:
+
+                        # If exact match and list is not empty
+                        if (match := multiple_match_determine(search_result, input_list[0])):
+                            try:
+                                color = randchoice(svar_dict["Settings"]["color"][match])
+
+                            # If list is empty
+                            except:
+                                pass
+
+        return "Weather Report", "\n".join(full_output_list), color, url, footer
+
+    # For some reason no locations have the seasons specified, return error
+    else:
+        return "You Have Been Sneak Attacked by an Error", "No locations have that season", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
 
 title, f, color, thumb, footer = main(&ARGS&)
