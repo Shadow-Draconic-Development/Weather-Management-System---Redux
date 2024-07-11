@@ -2,29 +2,42 @@ embed
 <drac2>
 
 
-def main():
+def main() -> tuple(str, str, str, str):
+    """
+    Main program function
+    
+    Returns:
+        str: Title
+        str: Main body paragraph
+        str: Color hex code
+        str: Footer
+    """
 
-
+    # Footer setup
     prefix = ctx.prefix
-    footer = f"{prefix}weather list location | 7/6/24 | ShadowsStride"
+    footer = f"{prefix}weather list location | 7/10/24 | ShadowsStride"
     error_str = ""
 
-
+    # If SVAR does not exist
     if not (svar_dict := get_svar("weather_settings")):
         return f"Weather Locations", "There currently are none", "", footer
 
+    # If SVAR exists, load into dictionary
     else:
         svar_dict = load_json(svar_dict)
 
+    # If there are no locations
     if len(svar_dict.keys()) == 1:
         return f"Weather Locations", "There currently are none", "", footer
 
+    # Pull Settings out of locations
     location_names = list(svar_dict.keys())
     location_names.remove("Settings")
 
     return "Weather Locations", "\n".join(location_names), "", footer
 
 
+# Main program function
 title, f, color, footer = main()
 
 
@@ -32,4 +45,5 @@ title, f, color, footer = main()
 -title "{{title}}"
 -f "{{f}}"
 -color "{{color}}"
+-image "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
 -footer "{{footer}}"
