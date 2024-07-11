@@ -2,22 +2,52 @@ embed
 <drac2>
 
 def create_output(color_dict: dict, season_name: str = "", warning_str: str = "", footer: str = "") -> tuple(str, str, str, str):
+    """
+    Creates output to display to user
 
+    Args:
+        color_dict (dict): Color dictionary
+        season_name (str): Season name (default: "")
+        warning_str (str): Warning string (default: "")
+        footer (str): Footer (default: "")
+
+    Returns:
+        str: Title
+        str: Body paragraph
+        str: Color hex code
+        str: Footer
+    """
+
+    # If there is a warning, add header
     if warning_str != "":
         output_str = f"**Warning:**\n{warning_str}\n\n"
     
+    # If there is no warning
     else:
         output_str = ""
 
+    # If no season specified, randomize season
     if season_name == "":
         season_name = randchoice(list(color_dict.keys()))
-        
 
+    # Craft string output
     output_str += f"**{season_name}:**\n{color_dict[season_name]}"
 
+    # If no warning
     if warning_str == "":
-        color = ""
 
+        # Get color hex codes
+        colors = color_dict[season_name].split("\n")
+
+        # Try to pick a random colo
+        try:
+            color = randchoice(colors)
+
+        # If there are no colors to pick from
+        except:
+            color = ""
+
+    # If warning
     else:
         color = "#CF142B"
 
@@ -45,57 +75,91 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str, str, str):
+    """
+    Main program function
+    
+    Args:
+        input_list (list[str]): List of user inputs
+    
+    Return:
+        str: Title
+        str: Body paragraph
+        str: Color hex code
+        str: Footer
+    """
 
+    # Setup footer
     prefix = ctx.prefix
-    footer = f"{prefix}weather list color [season name] | 6/29/24 | ShadowsStride"
+    footer = f"{prefix}weather list color [season name] | 7/10/24 | ShadowsStride"
 
+    # If SVAR does not exist
     if not (svar_dict := get_svar("weather_settings")):
         return f"Current Color Settings", "None", "", footer
 
+    # If SVAR exists, load into dictionary
     else:
         svar_dict = load_json(svar_dict)
 
+    # If settings does not exist
     if not "Settings" in svar_dict.keys():
         return "Current Color Settings", "None", "", footer
 
+    # If there are no colors 
     if not "color" in svar_dict["Settings"].keys():
         return "Current Color Settings", "None", "", footer
 
     if svar_dict["Settings"]["color"] == dict():
         return "Current Color Settings", "None", "", footer
 
+    # Color dictionary
     color_dict = {}
 
-    for season, color_list in svar_dict["color"].items():
+    # Join all the colors into a string
+    for season, color_list in svar_dict["Settings"]["color"].items():
         color_dict[season] = "\n".join(color_list)
 
+    # If season is specified
     if len(input_list) > 0:
 
+        # If season is found
         if (search_result := search_list(input_list[0], color_dict.keys())):
 
+            # If exactly one season is found
             if len(search_result) == 1:
-                return create_output(color_dict=color_dict, season_name=search_result[0], footer=footer):
+                return create_output(color_dict=color_dict, season_name=search_result[0], footer=footer)
 
+            # If more than one season is found
             else:
+
+                # For each potential match
                 for match in search_result:
+
+                    # If exact match
                     if match.lower() == input_list[0].lower():
                         return create_output(color_dict=color_dict, season_name=match, footer=footer)
 
+                # Warning string
                 warning_str = "**Multiple Seasons Found:**\n" + "\n".join(search_result)
 
                 return create_output(color_dict=color_dict, warning_str=warning_str, footer=footer)
 
+        # If no seasons are found
         else:
             return create_output(color_dict=color_dict, warning_str=f"{input_list[0]} does not exist", footer=footer)
 
+    # If no season is provided
     else:
         return create_output(color_dict=color_dict, warning_str="No season name provided", footer=footer)
 
 
+# Main program function
 title, f, color, footer = main(&ARGS&)
+
+
 </drac2>
 -title "{{title}}"
 -f "{{f}}"
 -color "{{color}}"
+-thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
 -footer "{{footer}}"
