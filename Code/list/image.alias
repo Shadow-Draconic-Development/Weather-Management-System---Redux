@@ -24,6 +24,16 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
 
 
 def multiple_match_determine(search_result: list[str], input_value: str):
+    """
+    Detemines if there is an exact match in search results
+    
+    Args:
+        search_result (list[str]): List of search results
+        input_value (str): Input value to match
+
+    Returns:
+        str|bool: The exact match if found, otherwise False
+    """
 
     for match in search_result:
         if match.lower() == input_value.lower():
@@ -32,65 +42,96 @@ def multiple_match_determine(search_result: list[str], input_value: str):
     return False
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str, str, str):
+    """
+    Main program function
 
+    Args:
+        input_list (list[str]): List of user inputs
+    
+    Return:
+        str: Title
+        str: Main body paragraph
+        str: Color hex code
+        str: Footer
+    """
 
+    # Footer, error_str, and color
     prefix = ctx.prefix
-    footer = f"{prefix}weather list image <season name> | 7/5/24 | ShadowsStride"
+    footer = f"{prefix}weather list image <season name> | 7/10/24 | ShadowsStride"
     error_str = ""
     color = ""
 
+    # If SVAR does not exist
     if not (svar_dict := get_svar("weather_settings")):
         return f"Seasonal Images", "There currently are none", "", footer
 
+    # If SVAR exists, load dictionary
     else:
         svar_dict = load_json(svar_dict)
 
+    # If Settings does not exist
     if not "Settings" in svar_dict.keys():
         return f"Seasonal Images", "There currently are none", "", footer
 
+    # If URL does not have any seasons
     if svar_dict["Settings"]["url"] == dict():
         return f"Seasonal Images", "There currently are none", "", footer
 
+    # Set default (random season)
     season = "random"
 
+    # If there is at least one input
     if len(input_list) > 0:
 
+        # If it finds at least one season
         if (search_result := search_list(input_list[0], svar_dict["Settings"]["url"].keys())):
 
+            # If it finds exactly one season
             if len(search_result) == 1:
                 season = search_result[0]
 
+            # If there is more than one match
             else:
+
+                # If exact match was found
                 if (match := multiple_match_determine(search_result, input_list[0])):
                     season = match
 
+                # If exact match was not found
                 else:
                     error_str = "**Multiple Matches Found:**\n" + "\n".join(search_result)
 
+        # If no seasons were found
         else:
             error_str = "Season not found"
 
+    # If season is not random
     if season != "random":
-
         return "Season Images", f"**Season:** {season}\n**URL:** {svar_dict['Settings']['url'][season]}", color, svar_dict["Settings"]["url"][season], footer
 
+    # If season is random
     else:
+
+        # Pull season list
         season_list = list(svar_dict["Settings"]["url"].keys())
         season = randchoice(season_list)
 
+        # If there is an error
         if error_str != "":
 
             color = "#CF142B"
 
-            f = f"{error_str}\n\n**Seasons:**\n" + "\n".join(season_list) + f"\n**Season Shown:** {season}\n**URL:**" + svar_dict["Settings"]["url"][season]
+            f = f"{error_str}\n\n**Seasons:**\n" + "\n".join(season_list) + f"\n\n**Season Shown:** {season}\n**URL:** " + svar_dict["Settings"]["url"][season]
 
+        # If there is not an error
         else:
-            f = f"**Seasons:**\n" + "\n".join(season_list) + f"\n**Season Shown:** {season}\n**URL:**" + svar_dict["Settings"]["url"][season]
+            f = f"**Seasons:**\n" + "\n".join(season_list) + f"\n\n**Season Shown:** {season}\n**URL:** " + svar_dict["Settings"]["url"][season]
 
         return "Season Images", f, color, svar_dict["Settings"]["url"][season], footer
 
 
+# Main program function
 title, f, color, image, footer = main(&ARGS&)
 
 
