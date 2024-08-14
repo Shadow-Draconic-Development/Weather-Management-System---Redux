@@ -25,80 +25,99 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
 
 def main(input_list: list[str]):
 
-
+    # Prefix and footer setup
     prefix = ctx.prefix
     footer = f"{prefix}weather remove condition [location name] [season name]"
 
-
+    # If less than two inputs
     if len(input_list) < 2:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Expected location and season name' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-            return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Expected location and season name' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+    # If SVAR exists, load dictionary
+    if (svar_dict := get_svar("weather_settings")):
+        svar_dict = load_json(svar_dict) 
 
+    # If SVAR does not exist
+    else:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Weather settings does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-        if (svar_dict := get_svar("weather_settings")):
-            svar_dict = load_json(svar_dict) 
-
-        else:
-            return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Weather settings does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
-
-
+    # Grab location names
     location_names = list(svar_dict.keys())
     location_names.remove("Settings")
 
+    # If at least one location is found
     if (search_result := search_list(input_list[0], location_names)):
+
+        # If exactly one match is found
         if len(search_result) == 1:
             input_list[0] = search_result[0]
 
+        # If multiple matches are found
         else:
 
+            # Set default behavior
             found = False
-            for match in search_result:
-                if match.lower() != input_list[0].lower():
-                    pass
 
-                else:
+            # For each match
+            for match in search_result:
+
+                # If exact match
+                if match.lower() == input_list[0].lower():
                     input_list[0] = match
                     found = True
                     break
             
+            # If match not found
             if not found:
-
                 output = "**Multiple Locations Found:**\n" + "\n".join(search_result)
 
                 return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
+    # If no locations are found
     else:
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'That location does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""       
 
+    # Get season names
+    season_names = list(svar_dict[input_list[0]].keys())
+    if "priority" in season_names:
+        season_names.remove("priority")
 
-    if (search_result := search_list(input_list[1], svar_dict[input_list[0]].keys())):
+    # If at least one season is found
+    if (search_result := search_list(input_list[1], season_names)):
+
+        # If exactly one season is found
         if len(search_result) == 1:
             input_list[1] = search_result[0]
 
+        # If more than one season is found
         else:
 
+            # Set default behavior
             found = False
-            for match in search_result:
-                if match.lower() != input_list[1].lower():
-                    pass
 
-                else:
+            # For each match
+            for match in search_result:
+
+                # If exact match is found
+                if match.lower() == input_list[1].lower():
                     input_list[1] = match
                     found = True
                     break
             
+            # If exact match is not found
             if not found:
-
                 output = "**Multiple Seasons Found:**\n" + "\n".join(search_result)
 
                 return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
+    # If no seasons are found
     else:
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'That season does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""  
 
-
+    # Remove season
     svar_dict[input_list[0]].pop(input_list[1])
 
+    # Random thumbnail
     thumb = randchoice(
         ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/fall.png",
         "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
@@ -109,6 +128,7 @@ def main(input_list: list[str]):
     return f"{prefix}embed -title 'You Have Successfully Removed {input_list[1]}' -color '#39FF14' -footer '{footer}' -thumb '{thumb}'", f"{prefix}svar weather_settings {dump_json(svar_dict)}"
 
 
+# Main program function
 embed_str, svar_str = main(&ARGS&)
 
 
