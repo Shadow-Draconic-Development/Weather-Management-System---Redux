@@ -1,4 +1,3 @@
-// mainScript.js
 import { collectSeasonUrls } from './seasonUrlScript.js';
 import { collectWaterSettings } from './waterScript.js';
 import { collectWindSettings } from './windScript.js';
@@ -60,8 +59,9 @@ async function generateJSON() {
 
 function copyJSONToClipboard(jsonObject) {
     const jsonString = JSON.stringify(jsonObject);
+    const jsonStringWithSingleQuotes = `'${jsonString}'`;
 
-    navigator.clipboard.writeText(jsonString)
+    navigator.clipboard.writeText(jsonStringWithSingleQuotes)
         .then(() => {
             alert("JSON copied to clipboard!");
         })
@@ -72,7 +72,7 @@ function copyJSONToClipboard(jsonObject) {
     const formattedJsonString = JSON.stringify(jsonObject, null, 2);
     const jsonOutput = document.getElementById("jsonOutput");
     if (jsonOutput) {
-        jsonOutput.textContent = formattedJsonString;
+        jsonOutput.textContent = `'${formattedJsonString}'`;
     }
 }
 
