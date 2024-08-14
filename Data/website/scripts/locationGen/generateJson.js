@@ -1,5 +1,3 @@
-// Generated using ChatGPT, I don't have the JS experience to write this myself
-
 document.addEventListener('DOMContentLoaded', function() {
     const settingsForm = document.getElementById('settingsForm');
     const locationSettingsContainer = document.getElementById('locationSettingsContainer');
@@ -205,9 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         const jsonData = JSON.stringify(locations, null, 2);
-        jsonOutput.textContent = jsonData;
+        const jsonDataWithSingleQuotes = `'${jsonData}'`;
+        jsonOutput.textContent = jsonDataWithSingleQuotes;
 
-        navigator.clipboard.writeText(JSON.stringify(locations))
+        navigator.clipboard.writeText(jsonDataWithSingleQuotes)
             .then(() => {
                 alert('JSON copied to clipboard!');
             })
