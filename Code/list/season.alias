@@ -168,7 +168,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
         if "unit" in svar_dict["Settings"].keys():
         
             # If unit is imperial
-            if svar_dict["Settings"]["unit"] == "Imperial":
+            if svar_dict["Settings"]["unit"] == "imperial":
                 unit = "F°"
 
             # If unit is metric
