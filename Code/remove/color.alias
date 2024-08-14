@@ -23,76 +23,115 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str):
+    """
+    Main program function
+    
+    Args:
+        input_list (list[str]): 
+    
+    Return:
+        str: Embed string
+        str: SVAR string
+    """
 
-
+    # Prefix and footer setup
     prefix = ctx.prefix
-    footer = f"{prefix}weather remove color [season name] [color hex] | 6/19/24 | ShadowsStride"
+    footer = f"{prefix}weather remove color [season name] [color hex] | 7/20/24 | ShadowsStride"
 
 
+    # If less than two two inputs
     if len(input_list) < 2:
-
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Expected season name and color hex' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-
+    # If SVAR exists, load dictionary
     if (svar_dict := get_svar("weather_settings")):
-        svar_dict = load_json(svar_dict) 
+        svar_dict = load_json(svar_dict)
 
+        # If no settings
+        if not "Settings" in svar_dict.keys():
+            return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'There are no settings' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+        # If no color
+        if not "color" in svar_dict["Settings"].keys():
+            return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'There are no color settings' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+    # If SVAR does not exist
     else:
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Weather settings does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-
+    # If at least one season is found
     if (search_result := search_list(input_list[0], svar_dict["Settings"]["color"].keys())):
+
+        # If it finds exactly one match
         if len(search_result) == 1:
             input_list[0] = search_result[0]
 
+        # If it finds more than one match
         else:
 
+            # Set default behavior
             found = False
-            for match in search_result:
-                if match.lower() != input_list[0].lower():
-                    pass
 
-                else:
+            # For each match
+            for match in search_result:
+
+                # If exact match is found
+                if match.lower() == input_list[0].lower():
                     input_list[0] = match
                     found = True
                     break
             
+            # If exact match was not found
             if not found:
-
                 output = "**Multiple Seasons Found:**\n" + "\n".join(search_result)
 
                 return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
+    # If no matches were found
     else:
        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'That season does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", "" 
 
-    
+    # If at least one hex was found
     if (search_result := search_list(input_list[1], svar_dict["Settings"]["color"][input_list[0]])):
+
+        # If exactly one match was found
         if len(search_result) == 1:
             input_list[1] = search_result[0]
 
+        # If more than one match was found
         else:
 
+            # Set default behavior
             found = False
-            for match in search_result:
-                if match.lower() != input_list[1].lower():
-                    pass
 
-                else:
+            # For each match
+            for match in search_result:
+
+                # If exact match was found
+                if match.lower() == input_list[1].lower():
                     input_list[1] = match
                     found = True
                     break
             
+            # If exact match was not found
             if not found:
-
                 output = "**Multiple Colors Found:**\n" + "\n".join(search_result)
 
                 return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-    
-    svar_dict["Settings"]["color"][input_dict[0]].remove(input_list[1])
+    # If no hex was found
+    else:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Color not found `{input_list[1]}`' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
+    # Remove hex from list
+    svar_dict["Settings"]["color"][input_list[0]].remove(input_list[1])
+
+    # If season color list is empty
+    if len(svar_dict["Settings"]["color"][input_list[0]]) == 0:
+        svar_dict["Settings"]["color"].pop(input_list[0])
+
+    # Random thumbnail
     thumb = randchoice(
         ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/fall.png",
         "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
@@ -103,6 +142,7 @@ def main(input_list: list[str]):
     return f"{prefix}embed -title 'You Have Successfully Removed {input_list[1]}' -color '#39FF14' -footer '{footer}' -thumb '{thumb}'", f"{prefix}svar weather_settings {dump_json(svar_dict)}"
 
 
+# Main program function
 embed_str, svar_str = main(&ARGS&)
 
 
