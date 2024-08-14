@@ -23,7 +23,17 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def multiple_match_determine(search_result: list[str], input_value: str):
+def multiple_match_determine(search_result: list[str], input_value: str) -> str|bool:
+    """
+    Detemines if there is an exact match in search results
+    
+    Args:
+        search_result (list[str]): List of search results
+        input_value (str): Input value to match
+
+    Returns:
+        str|bool: The exact match if found, otherwise False
+    """
 
     for match in search_result:
         if match.lower() == input_value.lower():
@@ -32,92 +42,233 @@ def multiple_match_determine(search_result: list[str], input_value: str):
     return False
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str, str, str, str):
+    """
+    Main program function
+    
+    Args:
+        input_list (list[str]): List of user inputs
+    
+    Return:
+        str: Title
+        str: Body paragraph
+        str: Color hex code
+        str: Image URL
+        str: Footer
+    """ 
 
-
+    # Footer and error message setup
     prefix = ctx.prefix
-    footer = f"{prefix}weather list season [location name] <season name> | 7/6/24 | ShadowsStride"
+    footer = f"{prefix}weather list season [location name] <season name> | 7/13/24 | ShadowsStride"
     error_str = ""
 
-
+    # If SVAR does not exist
     if not (svar_dict := get_svar("weather_settings")):
-        return "Weather Seasons", "There currently are none", "", footer
+        return "Weather Seasons", "There currently are none", "", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png", footer
 
+    # If SVAR exists, load dictionary
     else:
         svar_dict = load_json(svar_dict)
 
+    # If there are no locations
     if len(svar_dict.keys()) == 1:
-        return "Weather Seasons", "There currently are none", "", footer
+        return "Weather Seasons", "There currently are none", "", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png", footer
 
+    # If there was no input
     if len(input_list) == 0:
-        return "You Have Been Sneak Attacked by an Error", "Expected the name of a location", "#CF142B", footer
+        return "You Have Been Sneak Attacked by an Error", "Expected the name of a location", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
+    # Get location names 
     location_names = list(svar_dict.keys())
     location_names.remove("Settings")
 
-
+    # If it finds at least one location
     if (search_result := search_list(input_list[0], location_names)):
 
+        # If there is exactly one location
         if len(location_names) == 1:
             input_list[0] = search_result[0]
         
+        # If there are more than one location
         else:
+
+            # If it finds an exact match
             if (location := multiple_match_determine(search_result, input_list[0])):
                 input_list[0] = location
 
+            # If it does not find an exact match
             else:
-                return "You Have Been Sneak Attacked by an Error", "\n".join(["**Multiple Locations Found:**"] + search_result), "#CF142B", footer
+                return "You Have Been Sneak Attacked by an Error", "\n".join(["**Multiple Locations Found:**"] + search_result), "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
+    # If it does not find a location
     else:
-        return "You Have Been Sneak Attacked by an Error", "\n".join(["Location not found\n"] + location_names), "#CF142B", footer
+        return "You Have Been Sneak Attacked by an Error", "\n".join(["Location not found\n"] + location_names), "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
+    # Get season names
     seasons = list(svar_dict[input_list[0]].keys())
     seasons.remove("priority")
 
+    # If no season name given
     if len(input_list) == 1:
-        return  f"Weather Seasons for {input_list[0]}", "\n".join(seasons), "", footer
+        return  f"Weather Seasons for {input_list[0]}", "\n".join(seasons), "", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png", footer
 
-    
-    if (search_result := search_list(input_list[0], seasons)):
+    # If it finds at least one season
+    if (search_result := search_list(input_list[1], seasons)):
 
+        # If it finds exactly one season
         if len(search_result) == 1:
             input_list[1] = search_result[0]
 
+        # If it finds more than one season
         else:
+
+            # If it finds an exact match
             if (season := multiple_match_determine(search_result, input_list[1])):
                 input_list[1] = season
 
+            # If it does not find an exact match
             else:
-                return  f"Weather Seasons for {input_list[0]}", "\n".join(["**Multiple Seasons Found:**"] + search_result), "#CF142B", footer
+                return  f"Weather Seasons for {input_list[0]}", "\n".join(["**Multiple Seasons Found:**"] + search_result), "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
+    # If it does not find a season
     else:
-        return  f"Weather Seasons for {input_list[0]}", "\n".join(["Season not found\n"] + seasons), "#CF142B", footer
+        return  f"Weather Seasons for {input_list[0]}", "\n".join(["Season not found\n"] + seasons), "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
-    water_condition_list = [f"{key}: {value}" for key, value in svar_dict[input_list[0]][input_list[1]]["water_conditions"].items()]
+    # If water_conditions is in season dictionary
+    if "water_conditions" in svar_dict[input_list[0]][input_list[1]].keys():
+        water_condition_list = [f"{key}: {value}" for key, value in svar_dict[input_list[0]][input_list[1]]["water_conditions"].items()]
 
-    wind_condition_list = [f"{key}: {value}" for key, value in svar_dict[input_list[0]][input_list[1]]["wind_conditions"].items()]
+    # If water_conditions is not in season dictionary
+    else:
+        water_condition_list = ["`ERROR`: Water conditions missing"]
 
-    output_list = [
-        f"Temperature Dice: {svar_dict[input_list[0]][input_list[1]]["temp_dice"]}",
-        f"Temperature Base: {svar_dict[input_list[0]][input_list[1]]["temp_base"]}",
-        "",
-        f"Water Dice: {svar_dict[input_list[0]][input_list[1]]["water_dice"]}",
-        "Water Conditions:",
-        "   " + "\n    ".join(water_condition_list),
-        "",
-        f"Wind Dice: {svar_dict[input_list[0]][input_list[1]]["wind_dice"]}",
-        "Wind Conditions:",
-        "   " + "\n    ".join(wind_condition_list),
-    ]
+    # If wind_conditions is in season dictionary
+    if "wind_conditions" in svar_dict[input_list[0]][input_list[1]].keys():
+        wind_condition_list = [f"{key}: {value}" for key, value in svar_dict[input_list[0]][input_list[1]]["wind_conditions"].items()]
 
-    return f"Weather Season {input_list[0]} -> {input_list[1]}", "\n".join(output_list), "", footer
+    # If wind_conditions is not in season dictionary
+    else:
+        wind_condition_list = ["`ERROR`: Wind conditions missing"]
+
+    # Create output list
+    output_list = []
+
+    # If temp_dice is in season dictionary
+    if "temp_dice" in svar_dict[input_list[0]][input_list[1]].keys():
+        output_list.append(f"**Temperature Dice:** {svar_dict[input_list[0]][input_list[1]]['temp_dice']}")
+
+    # If temp_dice is not in season dictionary
+    else:
+        output_list.append(f"**Temperature Dice:** `ERROR`: Temperature dice missing")
+
+    # If temp_base is in season dictionary
+    if "temp_base" in svar_dict[input_list[0]][input_list[1]].keys():
+
+        # If units is in settings dictionary
+        if "unit" in svar_dict["Settings"].keys():
+        
+            # If unit is imperial
+            if svar_dict["Settings"]["unit"] = "Imperial":
+                unit = "F°"
+
+            # If unit is metric
+            else:
+                unit = "C°"
+
+        # If units is not in settings dictionary
+        else:
+            unit = "F°" 
+
+        output_list.append(f"**Temperature Base:** {svar_dict[input_list[0]][input_list[1]]['temp_base']} {unit}\n")
+
+    # If temp_base is not in season dictionary
+    else:
+        output_list.append(f"**Temperature Base:** `ERROR`: Temperature base missing\n")
+
+    # If water_dice is in season dictionary
+    if "water_dice" in svar_dict[input_list[0]][input_list[1]].keys():
+        output_list.append(f"**Water Dice:** {svar_dict[input_list[0]][input_list[1]]['water_dice']}")
+
+    # If water_dice is not in season dictionary
+    else:
+        output_list.append(f"**Water Dice:** `ERROR`: Water dice missing")
+
+    # Output water conditions
+    output_list.append("**Water Conditions:**")
+    output_list.append("   " + "\n   ".join(water_condition_list) + "\n")
+
+    # If wind_dice is in season dictionary
+    if "wind_dice" in svar_dict[input_list[0]][input_list[1]].keys():
+        output_list.append(f"**Wind Dice:** {svar_dict[input_list[0]][input_list[1]]['wind_dice']}")
+
+    # If wind_dice is not in season dictionary 
+    else:
+        output_list.append(f"**Wind Dice:** `ERROR`: Wind dice missing")
+
+    # Output wind conditions
+    output_list.append("**Wind Conditions:**")
+    output_list.append("   " + "\n   ".join(wind_condition_list))
+
+    # Set default thumbnail
+    image = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
+
+    # If URL is in settings dictionary
+    if "url" in svar_dict["Settings"].keys():
+
+        # If it finds at least one match in url dictionary
+        if (search_result := search_list(input_list[1], svar_dict["Settings"]["url"].keys())):
+
+            # If it finds exactly one match
+            if len(search_result) == 1:
+                image = svar_dict["Settings"]["url"][search_result[0]]
+
+            # If it finds more than once match
+            else:
+
+                # If it finds exactly one match
+                if (match := multiple_match_determine(search_result, input_list[1])):
+                    image = svar_dict["Settings"]["url"][match]
+
+    # Set default color
+    color = ""
+
+    # If color is in settings dictionary
+    if "color" in svar_dict["Settings"].keys():
+
+        # If it finds at least one match in url dictionary
+        if (search_result := search_list(input_list[1], svar_dict["Settings"]["color"].keys())):
+
+            # If it finds exactly one match
+            if len(search_result) == 1:
+                
+                try:
+                    color = randchoice(svar_dict["Settings"]["color"][search_result[0]])
+
+                except:
+                    pass
+
+            # If if finds more than once match
+            else:
+
+                # If it finds an exact match
+                if (match := multiple_match_determine(search_result, input_list[1])):
+
+                    try:
+                        color = randchoice(svar_dict["Settings"]["color"][match])
+
+                    except:
+                        pass
+
+    return f"Weather Season {input_list[0]} -> {input_list[1]}", "\n".join(output_list), color, image, footer
 
 
-title, f, color, footer = main(&ARGS&)
+# Main program function
+title, f, color, thumb, footer = main(&ARGS&)
 
 
 </drac2>
 -title "{{title}}"
 -f "{{f}}"
 -color "{{color}}"
+-thumb "{{thumb}}"
 -footer "{{footer}}"
