@@ -23,71 +23,96 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str):
+    """
+    Main program function
 
+    Args:
+        input_list (list[str]): List of user inputs
 
+    Return:
+        str: Embed string
+        str: SVAR string
+    """
+
+    # Prefix and footer setup
     prefix = ctx.prefix
     footer = f"{prefix}weather remove condition [wind/water/temp] [condition name] | 6/19/24 | ShadowsStride"
 
+    # If SVAR exists, load dictionary
     if (svar_dict := get_svar("weather_settings")):
         svar_dict = load_json(svar_dict) 
 
+        # If no settings
+        if not "Settings" in svar_dict.keys():
+            return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'There are no settings' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+    # If SVAR does not exist
     else:
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Weather settings does not exist' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
+    # If less than two inputs
     if len(input_list) < 2:
 
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Expected condition type and condition name' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-
-
+    # If at least one condition type is found
     if (search_result := search_list(input_list[0], ["wind", "water", "temp"])):
+
+        # If exactly one match is found
         if len(search_result) == 1:
             input_list[0] = search_result[0]
 
+        # If more than one match
         else:
-
-            found = False
-            for match in search_result:
-                if match.lower() != input_list[0].lower():
-                    pass
-
-                else:
-                    input_list[0] = match
-                    found = True
-                    break
+            output = "**Multiple Condition Types Found:**\n" + "\n".join(search_result)
             
-            if not found:
+            return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-                output = "**Multiple Condition Types Found:**\n" + "\n".join(search_result)
+    # If no condition types are found
+    else:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Invalid condition type, must be wind, water, or temp' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-                return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+    # If condition type found does not exist
+    if not input_list[0] in svar_dict["Settings"].keys():
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{input_list[0]} does not exist in Settings' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-    if (search_result := search_list(input_list[0], svar_dict["Settings"][input_list[0]].keys())):
+    # If at least one condition name is found
+    if (search_result := search_list(input_list[1], svar_dict["Settings"][input_list[0]].keys())):
+
+        # If exactly one match is found
         if len(search_result) == 1:
             input_list[1] = search_result[0]
 
+        # If more than one match
         else:
 
+            # Set default behavior
             found = False
-            for match in search_result:
-                if match.lower() != input_list[1].lower():
-                    pass
 
-                else:
+            # For each match
+            for match in search_result:
+
+                # If exact match
+                if match.lower() == input_list[1].lower():
                     input_list[1] = match
                     found = True
                     break
             
+            # If exact match not found
             if not found:
-
                 output = "**Multiple Conditions Found:**\n" + "\n".join(search_result)
 
                 return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f '{output}' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
-    
+    # If no condition names are found
+    else:
+        return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Condition does not exist `{input_list[1]}`' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
+
+    # Remove condition name
     svar_dict["Settings"][input_list[0]].pop(input_list[1])
 
+    # Random thumbnail
     thumb = randchoice(
         ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/fall.png",
         "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
@@ -98,6 +123,7 @@ def main(input_list: list[str]):
     return f"{prefix}embed -title 'You Have Successfully Removed {input_list[1]}' -color '#39FF14' -footer '{footer}' -thumb '{thumb}'", f"{prefix}svar weather_settings {dump_json(svar_dict)}"
 
 
+# Main progam function
 embed_str, svar_str = main(&ARGS&)
 
 
