@@ -1,0 +1,199 @@
+multiline
+<drac2>
+
+
+def number_validator(input_value: str) -> bool:
+    
+    try:
+        int(input_value)
+        return True
+
+    except:
+        return False
+
+
+def validate_color(hex_code: str) -> bool:
+
+    # Remove leading and trailing whitespace
+    hex_code = hex_code.strip()
+    
+    # Ensure the hex code starts with '#'
+    if not hex_code.startswith('#'):
+        hex_code = '#' + hex_code
+
+    # Validate hex code length and content
+    if not (len(hex_code) == 4 or len(hex_code) == 7) or not all(c in '0123456789ABCDEFabcdef' for c in hex_code[1:]):
+        return False
+
+    # Convert 3-digit hex code to 6-digit hex code
+    if len(hex_code) == 4:
+        hex_code = '#' + ''.join([c * 2 for c in hex_code[1:]])
+
+    return hex_code
+
+
+def main(input_dict: dict) -> tuple(str, str):
+    """
+    Main program function
+
+    Args:
+        input_dict (dict): Input dictionary from JSON string
+    
+    Return:
+        str: Embed string
+        str: SVAR string
+    """
+
+    # Setup for embed
+    prefix = ctx.prefix
+    footer = f"{prefix}weather import settings [JSON string] | 6/17/24 | ShadowsStride"
+
+    # Error list
+    error_list = []
+
+    # If SVAR does not exist, create default dictionary
+    if not (svar_dict := get_svar("weather_settings")):
+        svar_dict = {
+            "Settings": {
+                "water": {},
+                "wind": {},
+                "temp": {},
+                "unit": "imperial",
+                "url": {},
+                "color": {}
+            }
+        }
+
+    # If SVAR does exist
+    else:
+        svar_dict = load_json(svar_dict)
+
+
+    for setting, setting_dict in input_dict.items():
+
+        match setting:
+
+            case c if c in ["water", "wind", "temp"]:
+
+                for option, option_dict in setting_dict.items():
+
+                    option_name = option
+
+                    mapping_dict = {option_normal.lower(): option_normal for option_normal in svar_dict["Settings"][setting].keys()}
+
+
+                    if option_name.lower() not in mapping_dict.keys():
+                        svar_dict["Settings"][setting][option_name] = dict()
+
+                    else:
+                        option_name = mapping_dict[option_name.lower()]
+
+                    if option_dict != dict():
+                        
+                        # For each min_rate, max_rate, condition
+                        for option_setting, option_setting_value in option_dict.items():
+                            if "Rate" in option_setting:
+
+                                if number_validator(option_setting_value):
+                                    svar_dict["Settings"][setting][option_name][option_setting] = float(option_setting_value)
+
+                                else:
+                                    error_list.append(f"{setting} -> {option_name} -> {option_setting} is not a number")
+
+                            elif option_setting == "condition":
+                                svar_dict["Settings"][setting][option_name][option_setting] = option_setting_value
+
+                            else:
+                                pass
+
+            case c if c == "unit":
+
+                if setting_dict.lower() in ["metric", "imperial"]:
+                    svar_dict["Settings"][setting] = setting_dict
+
+                else:
+                    error_list.append(f"{setting} must be imperial or metric")
+
+            case c if c == "url":
+
+                if not "url" in svar_dict["Settings"].keys():
+                    svar_dict["Settings"]["url"] = dict()
+
+
+                for season, img_url in setting_dict.items():
+
+                    season = season_name
+
+                    mapping_dict = {season_normal.lower(): season_normal for season_normal in svar_dict["Settings"]["url"].keys()}
+
+                    if season_name.lower() not in mapping_dict.keys():
+                        svar_dict["Settings"]["url"][season_name] = ""
+
+                    else:
+                        season_name = mapping_dict[season_name.lower()]
+
+                    if img_url.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")) and img_url.lower().startswith("http"):
+                        svar_dict["Settings"]["url"][season_name] = img_url
+
+                    else:
+                        error_list.append(f"url -> {season_name} has an invalid image URL")
+
+
+            case c if c == "color":
+
+                if not "color" in svar_dict["Settings"].keys():
+                    svar_dict["Settings"]["color"] = dict()
+
+                for season, color_list in setting_dict.items():
+
+                    season = season_name
+
+                    mapping_dict = {season_normal.lower(): season_normal for season_normal in svar_dict["Settings"]["url"].keys()}
+
+                    if season_name.lower() not in mapping_dict.keys():
+                        svar_dict["Settings"]["color"][season_name] = []
+
+                    else:
+                        season_name = mapping_dict[season_name.lower()]
+
+                    new_color_list = []
+
+                    for color in color_list:
+                        if new_color := validate_color(color):
+                            new_color_list.append(new_color)
+
+                        else:
+                            error_list.append(f"color -> {season_name} -> {color} is an invalid hex code")
+
+                    if len(new_color_list) != 0:
+                        svar_dict["Settings"]["color"][season_name] = new_color_list
+
+
+    # If no errors
+    if len(error_list) == 0:
+        color = "#39FF14"
+        f = "Setting(s) successfully imported"
+        thumb = randchoice(
+            ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/fall.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
+            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
+        )
+
+    # If errors
+    else:
+        color = "#CF142B"
+        f = "Setting(s) imported with errors\n**Errors:**\n" + "\n".join(error_list)
+        thumb = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png"
+
+    
+    return f"{prefix}embed -title '{ctx.author.display_name} Attempts to Import Settings Data' -f '{f}' -thumb '{thumb}' -color '{color}' -footer '{footer}'", f'{prefix}svar weather_settings {dump_json(svar_dict)}'        
+
+
+# Main program function
+embed_str, svar_str = main(load_json(%*%))
+
+
+</drac2>
+{{embed_str}}
+{{svar_str}}
