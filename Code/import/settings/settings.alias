@@ -196,7 +196,7 @@ def main(input_dict: dict) -> tuple(str, str):
                     if img_url.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")) and img_url.lower().startswith("http"):
                         
                         # Allow variable to change
-                        season = season_name
+                        season_name = season
 
                         # If it finds an existing season
                         if (search_result := search_list(season_name, svar_dict["Settings"]["url"].keys())):
@@ -236,7 +236,7 @@ def main(input_dict: dict) -> tuple(str, str):
                 for season, color_list in setting_dict.items():
 
                     # Allow variable to change
-                    season = season_name
+                    season_name = season
 
                     # If it finds at least one match
                     if (search_result := search_list(season_name, svar_dict["Settings"]["color"].keys())):
@@ -299,8 +299,10 @@ def main(input_dict: dict) -> tuple(str, str):
     return f"{prefix}embed -title '{ctx.author.display_name} Attempts to Import Settings Data' -f '{f}' -thumb '{thumb}' -color '{color}' -footer '{footer}'", f'{prefix}svar weather_settings {dump_json(svar_dict)}'        
 
 
+input_list = &ARGS&
+
 # Main program function
-embed_str, svar_str = main(load_json(%*%))
+embed_str, svar_str = main(load_json(input_list[0]))
 
 
 </drac2>
