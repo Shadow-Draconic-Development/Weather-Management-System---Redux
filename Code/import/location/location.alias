@@ -266,8 +266,10 @@ def main(input_dict: dict) -> tuple(str, str):
     return f"{prefix}embed -title '{ctx.author.display_name} Attempts to Import Location Data' -f '{f}' -thumb '{thumb}' -color '{color}' -footer '{footer}'", f'{prefix}svar weather_settings {dump_json(svar_dict)}'
 
 
+input_list = &ARGS&
+
 # Main program function
-embed_str, svar_str = main(load_json(%*%))
+embed_str, svar_str = main(load_json(input_list[0]))
 
 
 </drac2>
