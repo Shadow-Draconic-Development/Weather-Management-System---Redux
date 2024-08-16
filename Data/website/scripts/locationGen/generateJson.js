@@ -202,11 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         });
 
-        const jsonData = JSON.stringify(locations, null, 2);
-        const jsonDataWithSingleQuotes = `'${jsonData}'`;
-        jsonOutput.textContent = jsonDataWithSingleQuotes;
+        const formattedJsonData = `'${JSON.stringify(locations, null, 2)}'`;
+        const unformattedJsonData = `'${JSON.stringify(locations)}'`;
 
-        navigator.clipboard.writeText(jsonDataWithSingleQuotes)
+        jsonOutput.textContent = formattedJsonData;
+
+        navigator.clipboard.writeText(unformattedJsonData)
             .then(() => {
                 alert('JSON copied to clipboard!');
             })
