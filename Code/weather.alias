@@ -100,12 +100,11 @@ def threshold_finder(threshold_dict: dict, value: int|float) -> str:
     """
 
     # Sorts the threshold values
-    threshold_list = list(threshold_dict.keys())
+    threshold_list = [int(num) for num in threshold_dict.keys()]
     threshold_list.sort()
 
     threshold = ""
-    value = str(value)
-
+    value = int(value)
 
     # For each threshold in the list
     for thresh in threshold_list:
@@ -116,17 +115,17 @@ def threshold_finder(threshold_dict: dict, value: int|float) -> str:
 
             # If it is the last threshold
             if thresh == threshold_list[-1]:
-                return threshold
+                return str(threshold)
 
         # If the value is not greater than the threshold
         else:
-            return threshold
+            return str(threshold)
 
     # If no threshold is found, resort to base threshold
-    return threshold_list[0]
+    return str(threshold_list[0])
 
 
-def random_float(start: float, end: float, precision=5: int):
+def random_float(start: float, end: float, precision: int = 5):
     """
     Generates a random float between the specified minimum and maximum values.
 
