@@ -2,32 +2,73 @@ multiline
 <drac2>
 
 
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
 def number_validator(input_value: str) -> bool:
+    """
+    Validates numbers
+
+    Args:
+        input_value (str): String to be checked
+
+    Return:
+        bool: Whether or not it is a valid number
+    """
     
+    # If valid number
     try:
         int(input_value)
         return True
 
+    # If not valid number
     except:
         return False
 
 
-def validate_color(hex_code: str) -> bool:
+def validate_color(hex_code: str) -> bool|str:
+    """
+    Validates hex strings
+
+    Args:
+        hex_code (str): Hex code
+
+    Return:
+        bool|str: Hex code if valid, False if invalid
+    """
 
     # Remove leading and trailing whitespace
     hex_code = hex_code.strip()
     
-    # Ensure the hex code starts with '#'
-    if not hex_code.startswith('#'):
-        hex_code = '#' + hex_code
+    # Ensure the hex code starts with #
+    if not hex_code.startswith("#"):
+        hex_code = "#" + hex_code
 
     # Validate hex code length and content
-    if not (len(hex_code) == 4 or len(hex_code) == 7) or not all(c in '0123456789ABCDEFabcdef' for c in hex_code[1:]):
+    if not (len(hex_code) == 4 or len(hex_code) == 7) or not all(c in "0123456789ABCDEFabcdef" for c in hex_code[1:]):
         return False
 
     # Convert 3-digit hex code to 6-digit hex code
     if len(hex_code) == 4:
-        hex_code = '#' + ''.join([c * 2 for c in hex_code[1:]])
+        hex_code = "#" + "".join([c * 2 for c in hex_code[1:]])
 
     return hex_code
 
@@ -68,103 +109,171 @@ def main(input_dict: dict) -> tuple(str, str):
     else:
         svar_dict = load_json(svar_dict)
 
-
+    # For each setting, settings dict in input
     for setting, setting_dict in input_dict.items():
 
+        # Match setting name
         match setting:
 
+            # If water, wind, or temp
             case c if c in ["water", "wind", "temp"]:
 
+                # For each condition, condition dictionary
                 for option, option_dict in setting_dict.items():
 
+                    # Allow variable to change
                     option_name = option
 
-                    mapping_dict = {option_normal.lower(): option_normal for option_normal in svar_dict["Settings"][setting].keys()}
+                    # If it finds a condition that already exists
+                    if (search_result := search_list(option_name, svar_dict["Settings"][setting].keys())):
 
+                        # Default behavior 
+                        match = False
 
-                    if option_name.lower() not in mapping_dict.keys():
+                        # For each match
+                        for match in search_result:
+
+                            # If an exact match is found
+                            if match.lower() == option_name.lower():
+                                option_name = match
+                                break
+
+                        # If an exact match is not found
+                        if not match:
+                            svar_dict["Settings"][setting][option_name] = dict()
+
+                    # If it does not find a condition that already exists
+                    else:
                         svar_dict["Settings"][setting][option_name] = dict()
 
-                    else:
-                        option_name = mapping_dict[option_name.lower()]
-
+                    # If condition dictionary is not empty
                     if option_dict != dict():
                         
                         # For each min_rate, max_rate, condition
                         for option_setting, option_setting_value in option_dict.items():
-                            if "Rate" in option_setting:
 
+                            # If minRate or maxRate
+                            if "rate" in option_setting.lower():
+
+                                # If a valid number
                                 if number_validator(option_setting_value):
                                     svar_dict["Settings"][setting][option_name][option_setting] = float(option_setting_value)
 
+                                # If not a valid number
                                 else:
                                     error_list.append(f"{setting} -> {option_name} -> {option_setting} is not a number")
 
+                            # If condition
                             elif option_setting == "condition":
                                 svar_dict["Settings"][setting][option_name][option_setting] = option_setting_value
 
+                            # If something else for some reason
                             else:
                                 pass
 
+            # If unit of measurement
             case c if c == "unit":
 
+                # If proper metric or imperial
                 if setting_dict.lower() in ["metric", "imperial"]:
-                    svar_dict["Settings"][setting] = setting_dict
+                    svar_dict["Settings"][setting] = setting_dict.lower()
 
+                # If improper unit
                 else:
                     error_list.append(f"{setting} must be imperial or metric")
 
+            # If URL
             case c if c == "url":
 
+                # If URL doesn't exist, create dictionary entry
                 if not "url" in svar_dict["Settings"].keys():
                     svar_dict["Settings"]["url"] = dict()
 
-
+                # For each season, image url 
                 for season, img_url in setting_dict.items():
 
-                    season = season_name
-
-                    mapping_dict = {season_normal.lower(): season_normal for season_normal in svar_dict["Settings"]["url"].keys()}
-
-                    if season_name.lower() not in mapping_dict.keys():
-                        svar_dict["Settings"]["url"][season_name] = ""
-
-                    else:
-                        season_name = mapping_dict[season_name.lower()]
-
+                    # If valid image
                     if img_url.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp")) and img_url.lower().startswith("http"):
+                        
+                        # Allow variable to change
+                        season = season_name
+
+                        # If it finds an existing season
+                        if (search_result := search_list(season_name, svar_dict["Settings"]["url"].keys())):
+
+                            # Set default behavior
+                            match = False
+
+                            # For each match
+                            for match in search_result:
+
+                                # If an exact match is found
+                                if match.lower() == season_name.lower():
+                                    season_name = match
+                                    break
+
+                            # If an exact match is not found
+                            if not match:
+                                svar_dict["Settings"]["url"][season_name] = ""
+
+                        # If it does not find an existing season
+                        else:
+                            svar_dict["Settings"]["url"][season_name] = ""
+
                         svar_dict["Settings"]["url"][season_name] = img_url
 
+                    # If not valid image
                     else:
                         error_list.append(f"url -> {season_name} has an invalid image URL")
 
-
+            # If color
             case c if c == "color":
 
+                # If color does not exist
                 if not "color" in svar_dict["Settings"].keys():
                     svar_dict["Settings"]["color"] = dict()
 
                 for season, color_list in setting_dict.items():
 
+                    # Allow variable to change
                     season = season_name
 
-                    mapping_dict = {season_normal.lower(): season_normal for season_normal in svar_dict["Settings"]["url"].keys()}
+                    # If it finds at least one match
+                    if (search_result := search_list(season_name, svar_dict["Settings"]["color"].keys())):
 
-                    if season_name.lower() not in mapping_dict.keys():
+                        # Set default behavior
+                        match = False
+
+                        # For each match
+                        for match in search_result:
+
+                            # If an exact match is found
+                            if match.lower() == season_name.lower():
+                                season_name = match
+                                break
+
+                        if not match:
+                            svar_dict["Settings"]["color"][season_name] = []
+
+                    # If it finds no matches
+                    else:
                         svar_dict["Settings"]["color"][season_name] = []
 
-                    else:
-                        season_name = mapping_dict[season_name.lower()]
-
+                    # Create empty list
                     new_color_list = []
 
+                    # For each color hex in color list
                     for color in color_list:
-                        if new_color := validate_color(color):
+
+                        # If it is a valid color
+                        if (new_color := validate_color(color)):
                             new_color_list.append(new_color)
 
+                        # If it is not a valid color
                         else:
                             error_list.append(f"color -> {season_name} -> {color} is an invalid hex code")
 
+                    # If there is at least one color that is valid
                     if len(new_color_list) != 0:
                         svar_dict["Settings"]["color"][season_name] = new_color_list
 
