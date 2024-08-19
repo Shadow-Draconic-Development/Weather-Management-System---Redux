@@ -39,8 +39,7 @@ def main(input_list: list[str]) -> tuple(str, str):
     prefix = ctx.prefix
     footer = f"{prefix}weather remove color [season name] [color hex] | 7/20/24 | ShadowsStride"
 
-
-    # If less than two two inputs
+    # If less than two inputs
     if len(input_list) < 2:
         return f"{prefix}embed -title 'You Have Been Sneak Attacked By an Error' -f 'Expected season name and color hex' -color '#CF142B' -footer '{footer}' -thumb 'https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png'", ""
 
