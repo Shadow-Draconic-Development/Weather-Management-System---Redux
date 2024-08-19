@@ -1,0 +1,221 @@
+embed
+<drac2>
+
+
+def search_list(query: str, item_list: list[str]) -> list[str]|None:
+    """
+    Searches for item in list.
+
+    Args:
+        query (str): The query being made
+        item_list (list): List of items
+
+    Return:
+        list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
+    """
+
+    # Finds at least 1 match
+    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
+        return item_results
+
+    # If it finds no matches
+    else:
+        return None
+
+
+def main(input_list: list[str]) -> tuple(str, str, str, str):
+    """
+    Main program function
+    
+    Args:
+        input_list (list[str]): List of user inputs
+
+    Returns:
+        str: Title
+        str: Main body paragraph
+        str: Color hex code
+        str: Footer    
+    """
+
+    # Main footer and error string setup
+    prefix = ctx.prefix
+    footer = f"{prefix}weather list condition [water/wind/temp] <condition name> | 7/17/24 | ShadowsStride"
+    error_str = ""
+
+    # If SVAR does not exist
+    if not (svar_dict := get_svar("weather_settings")):
+        return f"Current Condition Settings", "None", "", footer
+
+    # If SVAR does exist, load dictionary
+    else:
+        svar_dict = load_json(svar_dict)
+
+    # If settings does not exist
+    if not "Settings" in svar_dict.keys():
+        return "Current Condition Settings", "None", "", footer
+
+    # If no input
+    if len(input_list) == 0:
+        input_list.append(randchoice(["temp", "wind", "water"]))
+
+    # If it finds a setting type
+    if (search_result := search_list(input_list[0], ["temp", "wind", "water"])):
+
+        # If it finds exactly one setting type
+        if len(search_result) == 1:
+            input_list[0] = search_result[0]
+
+        # If it finds more than one setting type
+        else:
+            input_list[0] = randchoice(["temp", "wind", "water"])
+            error_str = "**Multiple Matches Found:**\n" + "\n".join(search_result)
+
+    # If it does not find a setting type
+    else:
+        input_list[0] = randchoice(["temp", "wind", "water"])
+        error_str = "Invalid condition type"
+
+    # If it has an error
+    if error_str != "":
+        error_str += "\n"
+        color = "#CF142B"
+
+    # If it does not have an error
+    else:
+        color = ""
+
+    # If there was a condition input and there were no errors
+    if error_str == "" and len(input_list) > 1:
+
+        # If it finds a condition
+        if (search_result := search_list(input_list[1], svar_dict["Settings"][input_list[0]].keys())):
+
+            # If it finds exactly one condition
+            if len(search_result) == 1:
+                input_list[1] = search_result[0]
+
+            # If it finds more than one condition
+            else:
+
+                found = False
+
+                # For each match
+                for match in search_result:
+
+                    # If exact match
+                    if match.lower() == input_list[1].lower():
+                        input_list[1] = match
+                        found = True
+                        break
+
+                # If exact match not found
+                if not found:
+
+                    color = "#CF142B"
+                    error_str = "**Multiple Conditions Found:**" + "\n".join(search_result) + "\n"
+
+                    return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict["Settings"][input_list[0]].keys())), color, footer
+
+        # If it does not find a condition
+        else:
+            color = "#CF142B"
+            error_str = "Condition not found\n\n" 
+
+            # If the condition has empty settings
+            if svar_dict["Settings"][input_list[0]] == dict():
+                return f"Current {input_list[0].capitalize()} Condition Settings", f"{error_str}None", color, footer
+
+            return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict["Settings"][input_list[0]].keys())), color, footer                  
+
+        if "unit" not in svar_dict["Settings"].keys():
+            svar_dict["Settings"]["unit"] = "imperial"
+
+        # Match the condition type
+        match input_list[0]:
+
+            # Temperature
+            case c if c == "temp":
+
+                # If imperial 
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    degrees = "F°"
+                
+                # If metric
+                else:
+                    degrees = "C°"
+
+                # Output min/max threshold
+                f = f"**Min. Temperature:** {svar_dict['Settings']['temp'][input_list[1]]['minRate']} {degrees}\n**Max. Temperature:** {svar_dict['Settings']['temp'][input_list[1]]['maxRate']} {degrees}"
+
+                # If it has a condition
+                if "condition" in svar_dict["Settings"]["temp"][input_list[1]].keys():
+                    f += f"\n**Condition:** {svar_dict['Settings']['temp'][input_list[1]]['condition']}"
+
+            # Wind
+            case c if c == "wind":
+
+                # If imperial
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    unit = "mph"
+                
+                # If mertic
+                else:
+                    unit = "km/h"
+
+                # If minRate is in condition dictionary
+                if "minRate" in svar_dict['Settings']['wind'][input_list[1]].keys():
+                    f = f"**Min. Speed:** {svar_dict['Settings']['wind'][input_list[1]]['minRate']} {unit}\n**Max. Speed:** {svar_dict['Settings']['wind'][input_list[1]]['maxRate']} {unit}"
+
+                # If minRate is not in condition dictionary
+                else:
+                    f = ""
+
+                # If condition is in condition dictionary
+                if "condition" in svar_dict["Settings"]["wind"][input_list[1]].keys():
+                    f += f"\n**Condition:** {svar_dict['Settings']['wind'][input_list[1]]['condition']}" 
+
+            # Water
+            case _:
+
+                # If imperial
+                if svar_dict["Settings"]["unit"] == "imperial":
+                    unit = "in/hr"
+                
+                # If metric
+                else:
+                    unit = "mm/hr"       
+
+                # If minRate is in condition dictionary
+                if "minRate" in svar_dict["Settings"]["water"][input_list[1]].keys():
+                    f = f"**Min. Rate:** {svar_dict['Settings']['water'][input_list[1]]['minRate']} {unit}\n**Max. Rate:** {svar_dict['Settings']['water'][input_list[1]]['maxRate']} {unit}"
+
+                # If minRate is in condition dictionary
+                else:
+                    f = ""
+
+                # If condition is in condition dictionary
+                if "condition" in svar_dict["Settings"]["water"][input_list[1]].keys():
+                    f += f"\n**Condition:** {svar_dict['Settings']['water'][input_list[1]]['condition']}"
+
+        return f"Current {input_list[0].capitalize()} Condition Settings", f, color, footer
+
+    # If there was an error or no condition given
+    else:
+
+        # If condition dictionary is empty
+        if svar_dict["Settings"][input_list[0]] == dict():
+            return f"Current {input_list[0].capitalize()} Condition Settings", f"{error_str}None", color, footer
+
+        return f"Current {input_list[0].capitalize()} Condition Settings", error_str + "\n".join(list(svar_dict['Settings'][input_list[0]].keys())), color, footer
+
+
+# Main program function
+title, f, color, footer = main(&ARGS&)
+
+
+</drac2>
+-title "{{title}}"
+-f "{{f}}"
+-color "{{color}}"
+-thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
+-footer "{{footer}}"
