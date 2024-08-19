@@ -1,0 +1,25 @@
+embed
+<drac2>
+
+prefix = ctx.prefix
+footer = f"{prefix}weather list | 8/19/2024"
+
+title = f"{ctx.author.display_name} Needs the Help Action"
+
+f = [
+    f"`{prefix}weather list`: This subalias.",
+    "weather list color [season name]`: This subalias lists the color hexes of the specified season, otherwise returns a random season's hex codes.",
+    "weather list condition [water/wind/temp] <condition name>`: This subalias lists the conditions (and the settings) of the specified condition type",
+    "weather list image <season name>`: This subalias displays an image from general settings, displaying the season (if specified)",
+    "weather list location`: This subalias displays the current locations that are within general settings",
+    "weather list season [location name] <season name>`: This subalias displays the settings for the season and location specified",
+    "weather list unit`: This subalias displays the current unit settings (metric or imperial)"
+]
+
+f = f"\n{prefix}`".join(f)
+
+</drac2>
+-title "{{title}}"
+-f "{{f}}"
+-footer "{{footer}}"
+-thumb "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
