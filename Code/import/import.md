@@ -29,3 +29,7 @@ When importing, you can use the imports to overwrite settings that are within th
     - Overwrites the minRate, maxRate, and condition.
 - `color` -> `season`
     - Overwrites all the colors in the color list for the season
+
+## Subalias Markdown
+- `location`: [Location](https://github.com/Shadow-Draconic-Development/Weather-Management-System---Redux/blob/main/Code/import/location/location.md)
+- `settings`: [Settings](https://github.com/Shadow-Draconic-Development/Weather-Management-System---Redux/blob/main/Code/import/settings/settings.md)
