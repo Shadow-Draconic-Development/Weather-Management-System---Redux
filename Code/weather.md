@@ -1,6 +1,6 @@
 <h1>Weather Alias<img align="right" src="../Data/images/main.png" width="100px"></h1>
 
-Main content libary alias for generating weather reports
+Main content library alias for generating weather reports
 
 ## Usage
 `!weather [season name] <#>`

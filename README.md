@@ -15,12 +15,12 @@ I recommend setting up the [general settings](https://shadow-draconic-developmen
 #### Step 1: Generate General Settings
 
 ##### Setup Water Settings
-For each water setting, you come up with a name, minimum and maximum rates (at which the weather is raining/snowing in either Imperial or Metric units), and condition. You do not have to set these rates if you do not want to. E.g. Clear can simply be done by setting "Setting Name" to "Clear". You can even do something like Fog, where you add the Setting Name and then in the Condition you can specifiy "Disadvantage on Wisdom (Perception) checks."
+For each water setting, you come up with a name, minimum and maximum rates (at which the weather is raining/snowing in either Imperial or Metric units), and condition. You do not have to set these rates if you do not want to. E.g. Clear can simply be done by setting "Setting Name" to "Clear". You can even do something like Fog, where you add the Setting Name and then in the Condition you can specify "Disadvantage on Wisdom (Perception) checks."
 
 Setup as many water settings as you want. Typically, I would just recommend "Clear", "Foggy", "Light Rain", and "Heavy Rain".
 
 ##### Setup Wind Settings
-For each wind setting, you come up with a name, minimum and maximum rates (at which the wind is blowing in either imperial or metric units), and condition. You do not have to set these rates if you do not want to. E.g. Clear can simply be done by setting "Setting Name" to "Clear". You can even update the condition field which allows you can specifiy "Disadvantage on ranged weapon attacks."
+For each wind setting, you come up with a name, minimum and maximum rates (at which the wind is blowing in either imperial or metric units), and condition. You do not have to set these rates if you do not want to. E.g. Clear can simply be done by setting "Setting Name" to "Clear". You can even update the condition field which allows you can specify "Disadvantage on ranged weapon attacks."
 
 Setup as many wind settings as you want. Typically, I would just recommend "Clear", "Light Wind", and "Heavy wind".
 
