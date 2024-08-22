@@ -1,6 +1,6 @@
 <h1>Import Subalias<img align="right" src="../../Data/images/main.png" width="100px"></h1>
 
-This subalias helps users to where they need to go to generate JSONs for setting up imports.
+Helps users to where they need to go to generate JSONs for setting up imports.
 
 ## Location Import
 [Location Generator](https://shadow-draconic-development.github.io/Weather-Management-System---Redux/city.html) is where you go in order to generate settings for individual locations.

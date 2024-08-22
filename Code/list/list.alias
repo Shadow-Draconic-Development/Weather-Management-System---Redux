@@ -7,7 +7,7 @@ footer = f"{prefix}weather list | 8/19/2024"
 title = f"{ctx.author.display_name} Needs the Help Action"
 
 f = [
-    f"`{prefix}weather list`: This subalias.",
+    f"`{prefix}weather list`: This subalias",
     "weather list color [season name]`: This subalias lists the color hexes of the specified season, otherwise returns a random season's hex codes.",
     "weather list condition [water/wind/temp] <condition name>`: This subalias lists the conditions (and the settings) of the specified condition type",
     "weather list image <season name>`: This subalias displays an image from general settings, displaying the season (if specified)",

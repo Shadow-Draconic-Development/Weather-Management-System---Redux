@@ -1,6 +1,6 @@
 <h1>Season Subalias<img align="right" src="../../../Data/images/main.png" width="100px"></h1>
 
-This subalias displays the settings for the season and location specified
+Displays the settings for the season and location specified
 
 
 ## Usage

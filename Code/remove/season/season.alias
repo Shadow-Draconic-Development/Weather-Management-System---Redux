@@ -23,7 +23,17 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def main(input_list: list[str]):
+def main(input_list: list[str]) -> tuple(str, str):
+    """
+    Main program function
+
+    Args:
+        input_list (list[str]): List of user inputs
+    
+    Return:
+        str: Embed string
+        str: SVAR string
+    """
 
     # Prefix and footer setup
     prefix = ctx.prefix
