@@ -1,6 +1,6 @@
 <h1>List Subalias<img align="right" src="../../Data/images/main.png" width="100px"></h1>
 
-This subalias handles explaining what list subaliases are available to use and how to use them
+Explains what list subaliases are available to use and how to use them
 
 ## Usage
 `!weather list`

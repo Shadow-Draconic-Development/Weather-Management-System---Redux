@@ -2,7 +2,7 @@ embed
 <drac2>
 
 prefix = ctx.prefix
-footer = f"{prefix}weather list | 8/19/2024"
+footer = f"{prefix}weather list | 8/19/2024 | ShadowsStride"
 
 title = f"{ctx.author.display_name} Needs the Help Action"
 
