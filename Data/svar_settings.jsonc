@@ -50,31 +50,6 @@
                 "minRate": 32,
                 "maxRate": 39,
                 "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
-            },
-            "Gale": {
-                "minRate": 39,
-                "maxRate": 47,
-                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
-            },
-            "Strong Gale": {
-                "minRate": 47,
-                "maxRate": 55,
-                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
-            },
-            "Storm Gale": {
-                "minRate": 55,
-                "maxRate": 64,
-                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
-            },
-            "Violent Storm": {
-                "minRate": 64,
-                "maxRate": 73,
-                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
-            },
-            "Hurricane Force": {
-                "minRate": 73,
-                "maxRate": 100,
-                "condition": "See [Strong Wind](https://www.dndbeyond.com/sources/dmg/adventure-environments#StrongWind)"
             }
         },
         "temp": {

@@ -92,11 +92,8 @@ settings -> url
 settings -> color
 - Overwrites the entire color list for the season specified
 
-location -> season -> water_conditions
-- Overwrites details for all water_conditions
-
-location -> season -> wind_conditions
-- Overwrites details for all wind_conditions
+location -> season
+- Overwrites the entire season
 
 ### Removing Settings
 

@@ -125,26 +125,37 @@ def threshold_finder(threshold_dict: dict, value: int|float) -> str:
     return str(threshold_list[0])
 
 
-def random_float(start: float, end: float, precision: int = 5):
+def random_float(start: float, end: float, precision: int = 5) -> float:
     """
     Generates a random float between the specified minimum and maximum values.
 
     Args:
-        min_value (float): The minimum value for the random float.
-        max_value (float): The maximum value for the random float.
-        precision (int): How many decimal places, default 5.
+        start (float): The minimum value for the random float.
+        end (float): The maximum value for the random float.
+        precision (int): Number of decimal places, default 5.
 
     Returns:
-        float: A random float between min_value and max_value.
+        float: A random float between start and end.
     """
+    # Ensure min_val is the smaller value and max_val is the larger
+    min_val, max_val = min(start, end), max(start, end)
 
-    # Creates the factor
+    # Create the factor for precision
     factor = 10 ** precision
 
-    # Generates the random number 
-    random_integer = randint(int(start * factor), int(end * factor))
+    # Scale to integers
+    min_scaled = int(min_val * factor)
+    max_scaled = int(max_val * factor)
 
-    # Return random float
+    # Handle edge case where min_scaled >= max_scaled
+    if min_scaled >= max_scaled:
+        # If the range is invalid or collapsed, return min_val rounded to precision
+        return round(min_val, precision)
+
+    # Generate a random integer within the scaled range
+    random_integer = randint(min_scaled, max_scaled)
+
+    # Convert to float with specified precision
     return random_integer / factor
 
 
@@ -165,7 +176,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
     # Setup footer
     prefix = ctx.prefix
-    footer = f"{prefix}weather [season name] <#> | 7/8/24 | ShadowsStride" 
+    footer = f"{prefix}weather [season name] <#> | 6/2/25 | ShadowsStride" 
 
     # If no inputs were recieved
     if len(input_list) == 0:
@@ -357,8 +368,12 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
                 # If water conditions is not empty
                 if location_dict[location]["water_conditions"] != dict():
 
-                    # Grab water condition name
-                    water_condition_name = location_dict[location]['water_conditions'][threshold_finder(location_dict[location]["water_conditions"], dice_obj.total)]
+                    try:
+                        # Grab water condition name
+                        water_condition_name = location_dict[location]['water_conditions'][threshold_finder(location_dict[location]["water_conditions"], dice_obj.total)]
+
+                    except:
+                        water_condition_name = "None"
 
                     # Show dice roll
                     output_list.append(f"***Moisture:*** {dice_obj.dice} = `{dice_obj.total}`; {water_condition_name}")
@@ -381,6 +396,9 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
                             else:
                                 output_list.append(f"***Moisture Result:*** `ERROR`, no exact match on condition threshold")
 
+                    elif water_condition_name == "None":
+                        output_list.append(f"***Moisture Result:*** None")
+
                     # If no matches
                     else:
                         output_list.append(f"***Moisture Result:*** `ERROR`, Condition not found")
@@ -390,6 +408,10 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
                         # If minRate and maxRate is in the water_dict 
                         if "minRate" in water_dict.keys() and "maxRate" in water_dict.keys():
+
+                            if water_dict["minRate"] < water_dict["maxRate"]:
+                                water_dict["minRate"], water_dict["maxRate"] = water_dict["maxRate"], water_dict["minRate"]
+
                             rate = random_float(water_dict["minRate"], water_dict["maxRate"], 2)
 
                             # If imperial
@@ -406,7 +428,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
                 # If water conditions is empty
                 else:
-                    output_list.append("***Moisture:*** `ERROR`, missing conditions")
+                    output_list.append("***Moisture:*** None")
 
             # If water_dice and/or water_conditions is missing
             else:
@@ -424,7 +446,12 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
                 # If wind conditions is not empty, find condition name
                 if location_dict[location]["wind_conditions"] != dict():
-                    wind_condition_name = location_dict[location]['wind_conditions'][threshold_finder(location_dict[location]["wind_conditions"], dice_obj.total)]
+
+                    try:
+                        wind_condition_name = location_dict[location]['wind_conditions'][threshold_finder(location_dict[location]["wind_conditions"], dice_obj.total)]
+
+                    except:
+                        wind_condition_name = "None"
 
                     # Output result
                     output_list.append(f"***Wind:*** {dice_obj.dice} = `{dice_obj.total}`; {wind_condition_name}")
@@ -447,9 +474,12 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
                             else:
                                 output_list.append(f"**Wind Result:*** `ERROR`, no exact match on condition threshold")
 
+                    elif wind_condition_name == "None":
+                        pass
+
                     # If it does not find the wind condition
                     else:
-                        output_list.append(f"***Wind Result:*** `ERROR`, Condition not found")
+                        output_list.append(f"***Wind Result:*** None")
 
                     # If wind dictionary is not empty
                     if wind_dict != dict():

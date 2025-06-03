@@ -2,127 +2,6 @@ multiline
 <drac2>
 
 
-def condition_validation(condition_dict: dict, error_list: list[str], location: str, location_season: str, setting: str) -> tuple(int, list[str], dict):
-    """
-    Validates conditions
-
-    Args:
-        condition_dict (dict): Condition dictionary
-        error_list (list[str]): Current list of errors
-        location (str): Location string
-        location_season (str): Location season string
-        setting (str): Setting name
-
-    Return:
-        int: -1 if all errors, 0 if some errors, 1 if not errors
-        list[str]: Current list of errors
-        dict: Validated condition dictionary (if any)
-    """
-    
-    # Correct condition dictionary
-    correct_condition_dict = dict()
-    
-    # For each threshold, condition in condition dictionary
-    for condition_threshold, condition in condition_dict.items():
-
-        # Try to convert threshold to an integer, then add condition to correct condition dictionary
-        try:
-            int(condition_threshold)
-            correct_condition_dict[condition_threshold] = condition
-
-        # If threshold not a number, add error to error list
-        except:
-            error_list.append(f"{location} -> {location_season} -> {setting} -> {condition} has an invalid key (not a number)")
-
-    # If length of condition dictionary equeals correct condition dictionary
-    if len(correct_condition_dict) == len(condition_dict):
-        return 1, error_list, correct_condition_dict
-
-    # If length does not match
-    else:
-
-        # If there is at least one correct condition
-        if len(correct_condition_dict) != 0:
-            return 0, error_list, correct_condition_dict
-
-        # If there were no correct conditions
-        else:
-            return -1, error_list, correct_condition_dict
-
-
-def base_validation(base_string: str|int) -> int|bool:
-    """
-    Validates base value
-
-    Args:
-        base_string (str|int): Base value string/integer
-    
-    Return:
-        int|bool: Base value, False if error
-    """
-    
-    # Try to return base value as int
-    try:
-        return int(base_string)
-
-    # If error, return False
-    except:
-        return False
-
-
-def dice_validation(input_string: str) -> bool:
-    """
-    Validates dice notation
-
-    Args:
-        input_string (str): Dice string
-
-    Return:
-        bool: If correct notation
-    """
-
-    # If type is not a string
-    if not typeof(input_string) == "str":
-        return False
-
-    # If type is a string
-    else:
-
-        # Split string by "d"
-        parts = input_string.split("d")
-
-        # If there are not exactly two items (e.g. 3d4 -> [3, 4])
-        if len(parts) != 2:
-            return False
-
-        # If first item is not a number
-        elif not (parts[0].lstrip("-").isdigit()):
-
-            # If empty, make part 1
-            if parts[0] == "":
-                parts[0] = "1"
-
-                # If second part is not a number
-                if not parts[1].isdigit():
-                    return False
-
-                # If second part is a number
-                else:
-                    return True
-
-            # If not empty
-            else:
-                return False
-
-        # If second pary is not a number
-        elif not parts[1].isdigit():
-            return False
-
-        # If dice notation is followed
-        else:
-            return True
-
-
 def main(input_dict: dict) -> tuple(str, str):
     """
     Main program function
@@ -137,7 +16,7 @@ def main(input_dict: dict) -> tuple(str, str):
 
     # Setup for embed
     prefix = ctx.prefix
-    footer = f"{prefix}weather import location [JSON string] | 6/15/24 | ShadowsStride"
+    footer = f"{prefix}weather import location [JSON string] | 6/2/25 | ShadowsStride"
 
     # Error list
     error_list = []
@@ -159,109 +38,27 @@ def main(input_dict: dict) -> tuple(str, str):
     else:
         svar_dict = load_json(svar_dict)
 
-
-    # For each location, location details in input dictionary
     for location, location_details in input_dict.items():
 
-        location_name = location
+        if location == "Settings":
+            continue
 
-        mapping_dict = {location_normal.lower(): location_normal for location_normal in svar_dict.keys()}
+        if location in svar_dict.keys():
 
-        # If location is not in SVAR, create location with default priority
-        if not location_name.lower() in mapping_dict.keys():
-            svar_dict[location_name] = {
-                "priority": 999
-            }
+            for key, value in location_details.items():
+                svar_dict[location][key] = value
 
         else:
-            if (location_name := mapping_dict[location_name.lower()]) == "settings":
-                error_list.append("Location name cannot be named 'settings'")
+            svar_dict[location] = location_details
 
-            else:
-
-                # For each season, season settings in location
-                for location_season, season_details in location_details.items():
-
-                    # If season is not priority
-                    if location_season != "priority":
-
-                        # Redo searches for soft searching using search_list()
-
-                        location_season_name = location_season
-
-                        mapping_dict = {location_season_normal.lower(): location_season_normal for location_season_normal in svar_dict[location_name].keys()}
-
-                        if location_season_name.lower() not in mapping_dict.keys():
-                            svar_dict[location_name][location_season_name] = {}
-
-                        else:
-                            location_season_name = mapping_dict[location_season_name.lower()]
-
-                        # For each setting, value within season
-                        for setting, setting_value in season_details.items():
-
-                            # Match setting
-                            match setting:
-
-                                # If dice setting
-                                case c if "dice" in c:
-                                    
-                                    # If valid dice, set setting to new value
-                                    if dice_validation(setting_value):
-                                        svar_dict[location_name][location_season_name][setting] = setting_value
-
-                                    # If not valid dice, add to error list
-                                    else:
-                                        error_list.append(f"{location} -> {location_season_name} -> {setting} has invalid dice notation")
-
-                                # If base value setting
-                                case c if "base" in c:
-                                    
-                                    # If valud base, set setting to new value
-                                    if setting_value := base_validation(setting_value):
-                                        svar_dict[location_name][location_season_name][setting] = setting_value
-
-                                    # If not valid value, add to error list
-                                    else:
-                                        error_list.append(f"{location_name} -> {location_season_name} -> {setting} is not a number")
-
-                                # If condition setting, cehck valid settings
-                                case c if "conditions" in c:
-                                    check_result, error_list, setting_value = condition_validation(setting_value, error_list, location, location_season, setting)
-
-                                    # If at least one condition is valid, set to new value
-                                    if check_result in [0,1]:
-                                        svar_dict[location_name][location_season_name][setting] = setting_value
-
-                                    else:
-                                        error_list.append(f"{location_name} -> {location_season_name} -> {setting} imported no conditions")                  
-
-                    # If priority, set new priority
-                    else:
-
-                        if typeof(svar_dict[location_name]["priority"]) in ["str", "int", "float"]:
-                            svar_dict[location_name]["priority"] = location_details["priority"]
-
-                        else:
-                            error_list.append(f"{location_name} -> priotity: priority cannot be the name of a season")
-
-    # If no errors
-    if len(error_list) == 0:
-        color = "#39FF14"
-        f = "Location(s) successfully imported"
-        thumb = randchoice(
-            ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/fall.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
-            "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
-        )
-
-    # If errors
-    else:
-        color = "#CF142B"
-        f = "Location(s) imported with errors\n**Errors:**\n" + "\n".join(error_list)
-        thumb = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png"
-
+    color = "#39FF14"
+    f = "Location(s) successfully imported"
+    thumb = randchoice(
+        ["https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/fall.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/spring.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/summer.png",
+        "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-system---Redux/main/Data/images/winter.png"]
+    )
     
     return f"{prefix}embed -title '{ctx.author.display_name} Attempts to Import Location Data' -f '{f}' -thumb '{thumb}' -color '{color}' -footer '{footer}'", f'{prefix}svar weather_settings {dump_json(svar_dict)}'
 
