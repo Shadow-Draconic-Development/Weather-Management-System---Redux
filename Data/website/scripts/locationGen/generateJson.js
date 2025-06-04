@@ -202,8 +202,8 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         });
 
-        const formattedJsonData = `'${JSON.stringify(locations, null, 2)}'`;
-        const unformattedJsonData = `'${JSON.stringify(locations)}'`;
+        const formattedJsonData = `'${JSON.stringify(locations, null, 2).replaceAll("'", "\\'")}'`;
+        const unformattedJsonData = `'${JSON.stringify(locations).replaceAll("'", "\\'")}'`;
 
         jsonOutput.textContent = formattedJsonData;
 

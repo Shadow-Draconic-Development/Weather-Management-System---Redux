@@ -59,7 +59,7 @@ async function generateJSON() {
 
 function copyJSONToClipboard(jsonObject) {
     const jsonString = JSON.stringify(jsonObject).replaceAll("'", "\\'");
-    const jsonStringWithSingleQuotes = `'${jsonString.replaceAll("'", "\\'")}'`;
+    const jsonStringWithSingleQuotes = `'${jsonString}'`;
 
     navigator.clipboard.writeText(jsonStringWithSingleQuotes)
         .then(() => {
@@ -72,7 +72,7 @@ function copyJSONToClipboard(jsonObject) {
     const formattedJsonString = JSON.stringify(jsonObject).replaceAll("'", "\\'");
     const jsonOutput = document.getElementById("jsonOutput");
     if (jsonOutput) {
-        jsonOutput.textContent = `'${formattedJsonString.replaceAll("'", "\\'")}'`;
+        jsonOutput.textContent = `'${formattedJsonString}'`;
     }
 }
 
