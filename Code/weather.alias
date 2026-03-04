@@ -80,11 +80,11 @@ def convert_measurement(units: str, amount: float) -> float:
         # Wind Speed
         # MPH
         case c if c == "mph":
-            return round(amount * 1.60935, 2)
+            return round(amount * 1.280935, 2)
 
         # km/hr
         case c if c == "km/h":
-            return round(amount / 1.60935, 2)
+            return round(amount / 1.280935, 2)
 
 
 def threshold_finder(threshold_dict: dict, value: int|float) -> str:
@@ -176,7 +176,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
     # Setup footer
     prefix = ctx.prefix
-    footer = f"{prefix}weather [season name] <#> | 6/2/25 | ShadowsStride" 
+    footer = f"{prefix}weather [season name] <location #> | 3/3/26 | ShadowsStride" 
 
     # If no inputs were recieved
     if len(input_list) == 0:
@@ -271,7 +271,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
         for location in priority_dict[priority_level]:
 
             # If there are two locations already, create new list
-            if len(actual_priority_list[i]) == 2:
+            if len(actual_priority_list[i]) == 1:
                 i += 1
                 actual_priority_list.append([])
 
@@ -306,7 +306,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
             page_num = 1
 
     # Remove one from page number to use index
-    page_num += -1
+    page_num -= 1
 
     # Create full output list
     full_output_list = []
@@ -349,7 +349,14 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
                                 # If condition has effects
                                 if "condition" in svar_dict["Settings"]["temp"][condition].keys():
-                                    output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition']}")
+
+                                    if len(svar_dict["Settings"]["temp"][condition]["condition"]) > 280:
+                                        output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition'][:280]}...(trunicated)")
+
+                                    else:
+                                        output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition']}")
+
+                                break
 
             # If the temp_dice and/or temp base is not within the season
             else:
@@ -424,8 +431,11 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
                         # If there is a condition
                         if "condition" in water_dict.keys():
-                            output_list.append(f"***Moisture Effects:*** {water_dict['condition']}")
-
+                            if len(water_dict["condition"]) > 280:
+                                output_list.append(f"***Moisture Effects:*** {water_dict['condition'][:280]}...(trunicated)")
+    
+                            else:
+                                output_list.append(f"***Moisture Effects:*** {water_dict['condition']}")
                 # If water conditions is empty
                 else:
                     output_list.append("***Moisture:*** None")
@@ -498,7 +508,11 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
                         # If there is a condition
                         if "condition" in wind_dict.keys():
-                            output_list.append(f"***Wind Effects:*** {wind_dict['condition']}")
+                            if len(wind_dict["condition"]) > 280:
+                                output_list.append(f"***Wind Effects:*** {wind_dict['condition'][:280]}...(trunicated)")
+    
+                            else:
+                                output_list.append(f"***Wind Effects:*** {wind_dict['condition']}")
 
                 # If wind conditions is empty
                 else:
@@ -515,7 +529,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
             full_output_list.append("\n".join(output_list))
 
         # Insert header
-        full_output_list.insert(0, f"**Page {page_num + 1}/{len(actual_priority_list)}**\n==================")
+        full_output_list.insert(0, f"**Location {page_num + 1}/{len(actual_priority_list)}**\n==================")
 
         # Use placeholder url
         url = "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/main.png"
@@ -581,7 +595,6 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
 
 title, f, color, thumb, footer = main(&ARGS&)
-
 
 </drac2>
 -title "{{title}}"

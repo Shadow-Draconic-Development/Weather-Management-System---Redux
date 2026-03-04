@@ -3,13 +3,13 @@
 Main content library alias for generating weather reports
 
 ## Usage
-`!weather [season name] <#>`
+`!weather [season name] <location #>`
 - `season name`
     - Required
     - Name of season
-- `#`
+- `location #`
     - Optional
-    - Page number (multiple pages can be generated)
+    - Location #
 
 ## Subalias Markdown
 - `import`: [Import](https://github.com/Shadow-Draconic-Development/Weather-Management-System---Redux/blob/main/Code/import/import.md)
