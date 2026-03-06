@@ -18,10 +18,6 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
     if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
         return item_results
 
-    # If it finds no matches
-    else:
-        return None
-
 
 def multiple_match_determine(search_result: list[str], input_value: str) -> str|None:
     """
