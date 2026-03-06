@@ -23,7 +23,7 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         return None
 
 
-def multiple_match_determine(search_result: list[str], input_value: str) -> str|bool:
+def multiple_match_determine(search_result: list[str], input_value: str) -> str|None:
     """
     Detemines if there is an exact match in search results
     
@@ -32,14 +32,15 @@ def multiple_match_determine(search_result: list[str], input_value: str) -> str|
         input_value (str): Input value to match
 
     Returns:
-        str|bool: The exact match if found, otherwise False
+        str|None: The exact match if found, otherwise None
     """
 
+    # For each match in search result
     for match in search_result:
+
+        # If exact match, return match
         if match.lower() == input_value.lower():
             return match
-
-    return False
 
 
 def convert_measurement(units: str, amount: float) -> float:
