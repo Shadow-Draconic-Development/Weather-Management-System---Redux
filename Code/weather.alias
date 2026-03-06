@@ -61,30 +61,34 @@ def convert_measurement(units: str, amount: float) -> float:
 
         # Temperature
         # Fahrenheit
-        case c if c == "f":
+        case "f":
             return round((amount - 32) * (5/9), 2)
 
         # Celsius
-        case c if c == "c":
+        case "c":
             return round((amount * (9/5)) + 32, 2)      
 
         # Rain rate
         # in/hr
-        case c if c == "in/hr":
+        case "in/hr":
             return round(amount * 25.4, 2)
 
         # mm/hr
-        case c if c == "mm/hr":
+        case "mm/hr":
             return round(amount / 25.4, 2)
 
         # Wind Speed
         # MPH
-        case c if c == "mph":
-            return round(amount * 1.280935, 2)
+        case "mph":
+            return round(amount * 1.609344, 2)
 
         # km/hr
-        case c if c == "km/h":
-            return round(amount / 1.280935, 2)
+        case "km/h":
+            return round(amount / 1.609344, 2)
+
+        # Catch all error
+        case _:
+            err("Invalid measurement provided in convert_measurements function, contact ShadowsStride for more details")
 
 
 def threshold_finder(threshold_dict: dict, value: int|float) -> str:
@@ -176,7 +180,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
     # Setup footer
     prefix = ctx.prefix
-    footer = f"{prefix}weather [season name] <location #> | 3/3/26 | ShadowsStride" 
+    footer = f"{prefix}weather [season name] <location #> | 3/5/26 | ShadowsStride" 
 
     # If no inputs were recieved
     if len(input_list) == 0:
