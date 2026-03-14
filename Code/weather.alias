@@ -24,7 +24,7 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
 
 def multiple_match_determine(search_result: list[str], input_value: str) -> str|None:
     """
-    Detemines if there is an exact match in search results
+    Determines if there is an exact match in search results
     
     Args:
         search_result (list[str]): List of search results
@@ -182,7 +182,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
     prefix = ctx.prefix
     footer = f"{prefix}weather [season name] <location #> | 3/13/26 | ShadowsStride" 
 
-    # If no inputs were recieved
+    # If no inputs were received
     if len(input_list) == 0:
         return "You Have Been Sneak Attacked by an Error", "Expected the name of a season", "#CF142B", "https://raw.githubusercontent.com/Shadow-Draconic-Development/Weather-Management-System---Redux/main/Data/images/error.png", footer
 
@@ -355,7 +355,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
                                 if "condition" in svar_dict["Settings"]["temp"][condition].keys():
 
                                     if len(svar_dict["Settings"]["temp"][condition]["condition"]) > 280:
-                                        output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition'][:280]}...(trunicated)")
+                                        output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition'][:280]}...(truncated)")
 
                                     else:
                                         output_list.append(f"***Temperature Effects:*** {svar_dict['Settings']['temp'][condition]['condition']}")
@@ -436,7 +436,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
                         # If there is a condition
                         if "condition" in water_dict.keys():
                             if len(water_dict["condition"]) > 280:
-                                output_list.append(f"***Moisture Effects:*** {water_dict['condition'][:280]}...(trunicated)")
+                                output_list.append(f"***Moisture Effects:*** {water_dict['condition'][:280]}...(truncated)")
     
                             else:
                                 output_list.append(f"***Moisture Effects:*** {water_dict['condition']}")
@@ -513,7 +513,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
                         # If there is a condition
                         if "condition" in wind_dict.keys():
                             if len(wind_dict["condition"]) > 280:
-                                output_list.append(f"***Wind Effects:*** {wind_dict['condition'][:280]}...(trunicated)")
+                                output_list.append(f"***Wind Effects:*** {wind_dict['condition'][:280]}...(truncated)")
     
                             else:
                                 output_list.append(f"***Wind Effects:*** {wind_dict['condition']}")
