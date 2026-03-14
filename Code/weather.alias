@@ -14,9 +14,12 @@ def search_list(query: str, item_list: list[str]) -> list[str]|None:
         list[str]|None: If it finds at least one match, it returns the item(s) in a list, otherwise it returns None
     """
 
+    # Casefold query (so that number of total case folds is n+1)
+    query = query.casefold()
+
     # Finds at least 1 match
-    if len(item_results := [item for item in item_list if query.lower() in item.lower()]) > 0:
-        return item_results
+    item_results = [item for item in item_list if query in item.casefold()]
+    return item_results or None
 
 
 def multiple_match_determine(search_result: list[str], input_value: str) -> str|None:
@@ -210,7 +213,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
     priority_dict = {}
     location_dict = {}
 
-    # For each loexation
+    # For each location
     for location in locations:
 
         # Grab the seasons, not including the priority
