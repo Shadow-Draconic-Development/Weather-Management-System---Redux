@@ -180,7 +180,7 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
 
     # Setup footer
     prefix = ctx.prefix
-    footer = f"{prefix}weather [season name] <location #> | 3/5/26 | ShadowsStride" 
+    footer = f"{prefix}weather [season name] <location #> | 3/13/26 | ShadowsStride" 
 
     # If no inputs were recieved
     if len(input_list) == 0:
