@@ -289,21 +289,9 @@ def main(input_list: list[str]) -> tuple(str, str, str, str, str):
     # If it does
     else:
 
-        # Try converting to integer
+        # Clamping the value of the page_num
         try:
-            page_num = int(input_list[1])
-
-            # If page number is less than one
-            if page_num < 1:
-                page_num = 1
-
-            # If page number is greater than the number of pages
-            elif page_num > len(actual_priority_list):
-                page_num = len(actual_priority_list)
-
-            # If within sweet spot
-            else:
-                pass
+            page_num = max(1, min(int(input_list[1]), len(actual_priority_list)))
 
         # If failed, set number to one
         except:
