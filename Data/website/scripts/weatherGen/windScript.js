@@ -1,4 +1,6 @@
 // windScript.js
+import { loadFormState, debouncedSave } from "../persistence.js";
+
 const windSettings = [];
 
 function createWindSetting() {
@@ -26,6 +28,12 @@ function createWindSetting() {
     fieldset.appendChild(maxRateInput.input);
     fieldset.appendChild(conditionInput.label);
     fieldset.appendChild(conditionInput.input);
+
+    // Add auto-save listeners
+    [nameInput.input, minRateInput.input, maxRateInput.input, conditionInput.input].forEach(input => {
+        input.addEventListener("change", saveWindState);
+        input.addEventListener("input", saveWindState);
+    });
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
@@ -137,4 +145,23 @@ function createInputElement(id, type, labelText, step = null) {
 
 document.getElementById("addWindSetting").addEventListener("click", createWindSetting);
 
-export { windSettings, validateWindSettings, validateWindMinMaxRates, collectWindSettings };
+function saveWindState() {
+    const data = collectWindSettings();
+    debouncedSave("wind", data);
+}
+
+function restoreWindState() {
+    const savedData = loadFormState("wind");
+    if (!savedData || Object.keys(savedData).length === 0) return;
+
+    Object.entries(savedData).forEach(([name, settings]) => {
+        createWindSetting();
+        const index = windSettings.length;
+        document.getElementById(`windSettingName${index}`).value = name;
+        if (settings.minRate !== undefined) document.getElementById(`windSettingMinRate${index}`).value = settings.minRate;
+        if (settings.maxRate !== undefined) document.getElementById(`windSettingMaxRate${index}`).value = settings.maxRate;
+        if (settings.condition) document.getElementById(`windSettingCondition${index}`).value = settings.condition;
+    });
+}
+
+export { windSettings, validateWindSettings, validateWindMinMaxRates, collectWindSettings, restoreWindState };

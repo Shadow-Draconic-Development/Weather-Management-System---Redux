@@ -1,4 +1,6 @@
 // waterScript.js
+import { loadFormState, debouncedSave } from "../persistence.js";
+
 const waterSettings = [];
 
 function createWaterSetting() {
@@ -26,6 +28,12 @@ function createWaterSetting() {
     fieldset.appendChild(maxRateInput.input);
     fieldset.appendChild(conditionInput.label);
     fieldset.appendChild(conditionInput.input);
+
+    // Add auto-save listeners
+    [nameInput.input, minRateInput.input, maxRateInput.input, conditionInput.input].forEach(input => {
+        input.addEventListener("change", saveWaterState);
+        input.addEventListener("input", saveWaterState);
+    });
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
@@ -119,4 +127,23 @@ function createInputElement(id, type, labelText, step = null) {
 
 document.getElementById("addWaterSetting").addEventListener("click", createWaterSetting);
 
-export { waterSettings, validateWaterSettings, collectWaterSettings };
+function saveWaterState() {
+    const data = collectWaterSettings();
+    debouncedSave("water", data);
+}
+
+function restoreWaterState() {
+    const savedData = loadFormState("water");
+    if (!savedData || Object.keys(savedData).length === 0) return;
+
+    Object.entries(savedData).forEach(([name, settings]) => {
+        createWaterSetting();
+        const index = waterSettings.length;
+        document.getElementById(`waterSettingName${index}`).value = name;
+        if (settings.minRate !== undefined) document.getElementById(`waterSettingMinRate${index}`).value = settings.minRate;
+        if (settings.maxRate !== undefined) document.getElementById(`waterSettingMaxRate${index}`).value = settings.maxRate;
+        if (settings.condition) document.getElementById(`waterSettingCondition${index}`).value = settings.condition;
+    });
+}
+
+export { waterSettings, validateWaterSettings, collectWaterSettings, restoreWaterState };

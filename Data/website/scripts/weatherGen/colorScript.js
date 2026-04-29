@@ -1,4 +1,6 @@
 // Initialize an array to keep track of season and color inputs
+import { loadFormState, debouncedSave } from "../persistence.js";
+
 const colorSettings = [];
 
 // Function to create a new season and color input
@@ -20,6 +22,10 @@ function addColor() {
     seasonNameInput.type = "text";
     seasonNameInput.id = `colorSeasonName${colorCount}`;
     seasonNameInput.name = `colorSeasonName${colorCount}`;
+
+    // Add auto-save listener
+    seasonNameInput.addEventListener("change", saveColorState);
+    seasonNameInput.addEventListener("input", saveColorState);
 
     // Create a container for color inputs
     const colorInputsContainer = document.createElement("div");
@@ -72,6 +78,10 @@ function addColorInput(colorCount) {
     colorInput.type = "text";
     colorInput.className = `colorHex${colorCount}`;
     colorInput.name = `colorHex${colorCount}`;
+
+    // Add auto-save listeners
+    colorInput.addEventListener("change", saveColorState);
+    colorInput.addEventListener("input", saveColorState);
 
     // Create a delete button for the color hex code input
     const deleteButton = document.createElement("button");
@@ -186,5 +196,32 @@ function collectColorSettings() {
 // Event listener for adding a new season and color input
 document.getElementById("addColor").addEventListener("click", addColor);
 
+function saveColorState() {
+    const data = collectColorSettings();
+    debouncedSave("color", data);
+}
+
+function restoreColorState() {
+    const savedData = loadFormState("color");
+    if (!savedData || Object.keys(savedData).length === 0) return;
+
+    Object.entries(savedData).forEach(([seasonName, colors]) => {
+        addColor();
+        const index = colorSettings.length;
+        document.getElementById(`colorSeasonName${index}`).value = seasonName;
+        
+        // Add each color hex code
+        if (Array.isArray(colors)) {
+            colors.forEach(color => {
+                addColorInput(index);
+                const colorInputs = document.querySelectorAll(`.colorHex${index}`);
+                if (colorInputs.length > 0) {
+                    colorInputs[colorInputs.length - 1].value = color;
+                }
+            });
+        }
+    });
+}
+
 // Export the color settings array and the collectColorSettings function
-export { colorSettings, collectColorSettings };
+export { colorSettings, collectColorSettings, restoreColorState };

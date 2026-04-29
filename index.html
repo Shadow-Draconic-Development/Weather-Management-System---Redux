@@ -87,6 +87,7 @@
             <option value="metric">Metric</option>
         </select>
         <button type="submit">Generate JSON</button>
+        <button type="button" id="clearSavedData" style="background-color: #ff6b6b; margin-left: 10px;">Clear Saved Data</button>
     </form>
 
     <div id="output">
@@ -102,6 +103,48 @@
     <script type="module" src="Data/website/scripts/weatherGen/colorScript.js"></script>
     <script type="module" src="Data/website/scripts/weatherGen/generateJson.js"></script>
     <script type="module" src="Data/website/scripts/generalScripts.js"></script>
+    <script type="module">
+        import { clearAllFormStates, loadFormState } from "./Data/website/scripts/persistence.js";
+        import { restoreWaterState } from "./Data/website/scripts/weatherGen/waterScript.js";
+        import { restoreWindState } from "./Data/website/scripts/weatherGen/windScript.js";
+        import { restoreTempState } from "./Data/website/scripts/weatherGen/tempScript.js";
+        import { restoreColorState } from "./Data/website/scripts/weatherGen/colorScript.js";
+        import { restoreSeasonUrlState } from "./Data/website/scripts/weatherGen/seasonUrlScript.js";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Restore unit selection
+            const savedUnit = loadFormState("unit");
+            if (savedUnit && savedUnit.value) {
+                document.getElementById("unit").value = savedUnit.value;
+            }
+
+            // Setup auto-save for unit
+            const unitSelect = document.getElementById("unit");
+            if (unitSelect) {
+                unitSelect.addEventListener("change", function() {
+                    localStorage.setItem("wms_unit", JSON.stringify({ value: this.value }));
+                });
+            }
+
+            // Restore all form states
+            restoreWaterState();
+            restoreWindState();
+            restoreTempState();
+            restoreColorState();
+            restoreSeasonUrlState();
+
+            // Setup clear button
+            const clearButton = document.getElementById("clearSavedData");
+            if (clearButton) {
+                clearButton.addEventListener("click", function() {
+                    if (confirm("Are you sure you want to clear all saved data? This cannot be undone.")) {
+                        clearAllFormStates();
+                        location.reload();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

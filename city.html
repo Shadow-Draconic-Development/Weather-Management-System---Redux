@@ -38,6 +38,7 @@
         </fieldset>
 
         <button type="submit">Generate JSON</button>
+        <button type="button" id="clearSavedData" style="background-color: #ff6b6b; margin-left: 10px;">Clear Saved Data</button>
     </form>
 
     <div id="output">
@@ -48,11 +49,20 @@
     <!-- JavaScript file references -->
     <script type="module" src="Data/website/scripts/locationGen/generateJson.js"></script>
     <script type="module" src="Data/website/scripts/generalScripts.js"></script>
+    <script type="module">
+        import { clearFormState } from "./Data/website/scripts/persistence.js";
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const clearButton = document.getElementById("clearSavedData");
+            if (clearButton) {
+                clearButton.addEventListener("click", function() {
+                    if (confirm("Are you sure you want to clear all saved data? This cannot be undone.")) {
+                        clearFormState("location");
+                        location.reload();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
-<script type="text/javascript">
-    window.onbeforeunload = function() {
-        return "Are you sure you want to reload/leave the page?";
-    }
-</script>
-
 </html>

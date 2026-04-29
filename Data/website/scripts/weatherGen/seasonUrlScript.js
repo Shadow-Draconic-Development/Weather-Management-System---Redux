@@ -1,4 +1,6 @@
 // Initialize an array to keep track of season and URL inputs
+import { loadFormState, debouncedSave } from "../persistence.js";
+
 const seasonUrlSettings = [];
 
 // Asynchronous function to validate a single URL
@@ -33,6 +35,10 @@ function addSeasonUrl() {
     seasonNameInput.id = `seasonName${seasonUrlCount}`;
     seasonNameInput.name = `seasonName${seasonUrlCount}`;
 
+    // Add auto-save listeners
+    seasonNameInput.addEventListener("change", saveSeasonUrlState);
+    seasonNameInput.addEventListener("input", saveSeasonUrlState);
+
     const urlLabel = document.createElement("label");
     urlLabel.htmlFor = `seasonUrl${seasonUrlCount}`;
     urlLabel.textContent = "URL:";
@@ -41,6 +47,10 @@ function addSeasonUrl() {
     urlInput.type = "text";
     urlInput.id = `seasonUrl${seasonUrlCount}`;
     urlInput.name = `seasonUrl${seasonUrlCount}`;
+
+    // Add auto-save listeners
+    urlInput.addEventListener("change", saveSeasonUrlState);
+    urlInput.addEventListener("input", saveSeasonUrlState);
 
     // Add inputs and labels to the season div
     seasonDiv.appendChild(seasonNameLabel);
@@ -173,5 +183,31 @@ async function collectSeasonUrls() {
 // Event listener for adding a new season and URL input
 document.getElementById("addSeasonUrl").addEventListener("click", addSeasonUrl);
 
+function saveSeasonUrlState() {
+    const data = {};
+    seasonUrlSettings.forEach((seasonDiv, index) => {
+        const seasonNameInput = seasonDiv.querySelector(`#seasonName${index + 1}`);
+        const urlInput = seasonDiv.querySelector(`#seasonUrl${index + 1}`);
+        const seasonName = seasonNameInput ? seasonNameInput.value.trim() : "";
+        const url = urlInput ? urlInput.value.trim() : "";
+        if (seasonName) {
+            data[seasonName] = url;
+        }
+    });
+    debouncedSave("seasonUrl", data);
+}
+
+function restoreSeasonUrlState() {
+    const savedData = loadFormState("seasonUrl");
+    if (!savedData || Object.keys(savedData).length === 0) return;
+
+    Object.entries(savedData).forEach(([seasonName, url]) => {
+        addSeasonUrl();
+        const index = seasonUrlSettings.length;
+        document.getElementById(`seasonName${index}`).value = seasonName;
+        document.getElementById(`seasonUrl${index}`).value = url || '';
+    });
+}
+
 // Export the season and URL settings array and the collectSeasonUrls function
-export { seasonUrlSettings, collectSeasonUrls };
+export { seasonUrlSettings, collectSeasonUrls, restoreSeasonUrlState };

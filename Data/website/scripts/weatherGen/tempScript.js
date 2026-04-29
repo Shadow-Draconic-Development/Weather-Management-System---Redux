@@ -1,4 +1,6 @@
 // tempScript.js
+import { loadFormState, debouncedSave } from "../persistence.js";
+
 const temperatureSettings = [];
 
 function createTemperatureSetting() {
@@ -26,6 +28,12 @@ function createTemperatureSetting() {
     fieldset.appendChild(maxRateInput.input);
     fieldset.appendChild(conditionInput.label);
     fieldset.appendChild(conditionInput.input);
+
+    // Add auto-save listeners
+    [nameInput.input, minRateInput.input, maxRateInput.input, conditionInput.input].forEach(input => {
+        input.addEventListener("change", saveTempState);
+        input.addEventListener("input", saveTempState);
+    });
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
@@ -137,4 +145,23 @@ function createInputElement(id, type, labelText, step = null) {
 
 document.getElementById("addTemperatureSetting").addEventListener("click", createTemperatureSetting);
 
-export { temperatureSettings, validateTemperatureSettings, validateTemperatureMinMax, collectTempSettings };
+function saveTempState() {
+    const data = collectTempSettings();
+    debouncedSave("temp", data);
+}
+
+function restoreTempState() {
+    const savedData = loadFormState("temp");
+    if (!savedData || Object.keys(savedData).length === 0) return;
+
+    Object.entries(savedData).forEach(([name, settings]) => {
+        createTemperatureSetting();
+        const index = temperatureSettings.length;
+        document.getElementById(`temperatureSettingName${index}`).value = name;
+        if (settings.minRate !== undefined) document.getElementById(`temperatureSettingMinRate${index}`).value = settings.minRate;
+        if (settings.maxRate !== undefined) document.getElementById(`temperatureSettingMaxRate${index}`).value = settings.maxRate;
+        if (settings.condition) document.getElementById(`temperatureSettingCondition${index}`).value = settings.condition;
+    });
+}
+
+export { temperatureSettings, validateTemperatureSettings, validateTemperatureMinMax, collectTempSettings, restoreTempState };
