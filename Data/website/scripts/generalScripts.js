@@ -28,14 +28,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// Source - https://stackoverflow.com/a/65502583
-// Posted by Wenfang Du, modified by community. See post 'Timeline' for change history
-// Retrieved 2026-04-29, License - CC BY-SA 4.0
+window.addEventListener("beforeunload", function (e) {
+    e.preventDefault();
 
-window.addEventListener('beforeunload', evt => {
-  // Recommended
-  evt.preventDefault()
-  // Included for legacy support, e.g. Chrome/Edge < 119
-  evt.returnValue = true
-})
+    // Required for some browsers
+    e.returnValue = "";
+});
 
