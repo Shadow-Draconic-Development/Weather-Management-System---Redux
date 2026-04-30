@@ -58,7 +58,7 @@ async function generateJSON() {
 }
 
 function copyJSONToClipboard(jsonObject) {
-    const jsonString = JSON.stringify(jsonObject).replaceAll("'", "\\'");
+    const jsonString = JSON.stringify(jsonObject).replace(/['‘’‚‛]/g, "\\'");
     const jsonStringWithSingleQuotes = `'${jsonString}'`;
 
     navigator.clipboard.writeText(jsonStringWithSingleQuotes)
@@ -69,7 +69,7 @@ function copyJSONToClipboard(jsonObject) {
             console.error("Failed to copy text:", err);
         });
 
-    const formattedJsonString = JSON.stringify(jsonObject).replaceAll("'", "\\'");
+    const formattedJsonString = jsonString;
     const jsonOutput = document.getElementById("jsonOutput");
     if (jsonOutput) {
         jsonOutput.textContent = `'${formattedJsonString}'`;

@@ -148,14 +148,14 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         });
 
-        const formattedJsonData = `'${JSON.stringify(locations, null, 2).replaceAll("'", "\\'")}'`;
-        const unformattedJsonData = `'${JSON.stringify(locations).replaceAll("'", "\\'")}'`;
+        const jsonString = JSON.stringify(locations).replace(/['‘’‚‛]/g, "\\'"); // Use regex for compatibility
+        const formattedJsonData = `'${jsonString}'`;
 
         jsonOutput.textContent = formattedJsonData;
 
-        navigator.clipboard.writeText(unformattedJsonData)
+        navigator.clipboard.writeText(formattedJsonData)
             .then(() => {
-                alert('JSON copied to clipboard!');
+                alert("JSON copied to clipboard!");
             })
             .catch((err) => {
                 console.error("Failed to copy JSON to clipboard:", err);
